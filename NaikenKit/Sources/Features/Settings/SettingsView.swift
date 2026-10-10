@@ -16,7 +16,7 @@ public struct SettingsView: View {
                 LabeledContent("状態", value: cloudStatusText)
             }
             purchaseSection
-            if entitlementStore.current.canUseCustomerFolders {
+            if viewModel.showsCustomerFolders {
                 Section("Pro") {
                     Button("顧客フォルダを管理") { router.push(.customers) }
                 }

@@ -87,4 +87,26 @@ struct AddPropertyUseCaseTests {
 
         #expect(repository.saved == [property])
     }
+
+    @Test("Pro でなければ、お客様のフォルダに入れた物件は追加できない", arguments: [Entitlement.free, .unlocked])
+    func assigningCustomerRequiresPro(entitlement: Entitlement) async {
+        let repository = PropertyRepositoryMock()
+        let useCase = AddPropertyUseCase(repository: repository, entitlement: EntitlementProviderStub(current: entitlement))
+
+        await #expect(throws: AddPropertyUseCase.Failure.proRequired) {
+            try await useCase.execute(Property.fixture(customerID: UUID()))
+        }
+        #expect(repository.saved.isEmpty)
+    }
+
+    @Test("Pro ならお客様のフォルダに入れた物件を追加できる")
+    func proCanAssignCustomer() async throws {
+        let repository = PropertyRepositoryMock()
+        let useCase = AddPropertyUseCase(repository: repository, entitlement: EntitlementProviderStub(current: .pro))
+        let property = Property.fixture(customerID: UUID())
+
+        _ = try await useCase.execute(property)
+
+        #expect(repository.saved == [property])
+    }
 }

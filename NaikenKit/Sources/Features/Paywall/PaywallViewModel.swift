@@ -124,7 +124,14 @@ public final class PaywallViewModel {
 
     // MARK: - Private
 
-    private func isOwned(_: PurchasableProduct) -> Bool {
-        return entitlementState.current != .free
+    private func isOwned(_ product: PurchasableProduct) -> Bool {
+        switch entitlementState.current {
+        case .free:
+            return false
+        case .unlocked:
+            return !product.isSubscription
+        case .pro:
+            return true
+        }
     }
 }

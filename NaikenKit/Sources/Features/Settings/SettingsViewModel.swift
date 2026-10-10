@@ -32,7 +32,11 @@ public final class SettingsViewModel {
     }
 
     var showsUnlockButton: Bool {
-        return entitlementState.current == .free
+        return entitlementState.current != .pro
+    }
+
+    var showsCustomerFolders: Bool {
+        return entitlementState.current.canUseCustomerFolders
     }
 
     // MARK: - Init

@@ -38,7 +38,8 @@ final class AppContainer {
             addProperty: addProperty,
             fetchCustomers: fetchCustomers,
             loadPhotoImage: loadPhotoImage,
-            storeChanges: storeChanges
+            storeChanges: storeChanges,
+            entitlementState: entitlementStore
         )
     }
 
@@ -47,8 +48,9 @@ final class AppContainer {
             propertyID: propertyID,
             fetchProperty: fetchProperty,
             addProperty: addProperty,
-            updateProperty: UpdatePropertyUseCase(repository: repositories.properties),
-            fetchCustomers: fetchCustomers
+            updateProperty: UpdatePropertyUseCase(repository: repositories.properties, entitlement: entitlementStore),
+            fetchCustomers: fetchCustomers,
+            entitlementState: entitlementStore
         )
     }
 

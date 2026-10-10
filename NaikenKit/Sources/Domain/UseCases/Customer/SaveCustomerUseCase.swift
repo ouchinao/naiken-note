@@ -15,7 +15,7 @@ public struct SaveCustomerUseCase: Sendable {
     }
 
     public func execute(_ customer: Customer) async throws {
-        let current = await entitlement.current
+        let current = await entitlement.currentEntitlement()
         if !current.canUseCustomerFolders {
             throw Failure.proRequired
         }

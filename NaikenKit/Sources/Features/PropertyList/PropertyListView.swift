@@ -5,7 +5,6 @@ import SwiftUI
 public struct PropertyListView: View {
     @State private var viewModel: PropertyListViewModel
     @Environment(Router.self) private var router
-    @Environment(EntitlementStore.self) private var entitlementStore
 
     public init(viewModel: PropertyListViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -18,14 +17,8 @@ public struct PropertyListView: View {
             .safeAreaInset(edge: .bottom) { compareBar }
             .task { await viewModel.load() }
             .task { await viewModel.observeChanges() }
-            .onChange(of: viewModel.filter) {
+            .onChange(of: viewModel.showsFolderMenu) {
                 Task { await viewModel.load() }
-            }
-            .onChange(of: entitlementStore.current) { _, entitlement in
-                // 絞り込みを残さないのは、Pro が切れるとフォルダのメニューが消えて、ユーザーが解除できなくなるため
-                if !entitlement.canUseCustomerFolders {
-                    viewModel.filter = .all
-                }
             }
             .alert(
                 "確認",
@@ -87,7 +80,7 @@ public struct PropertyListView: View {
                 Label("設定", systemImage: "gearshape")
             }
         }
-        if entitlementStore.current.canUseCustomerFolders {
+        if viewModel.showsFolderMenu {
             ToolbarItem(placement: .topBarLeading) {
                 folderMenu
             }
@@ -109,7 +102,7 @@ public struct PropertyListView: View {
 
     private var folderMenu: some View {
         Menu {
-            Picker("フォルダ", selection: $viewModel.filter) {
+            Picker("フォルダ", selection: filterBinding) {
                 Text("すべて").tag(CustomerFilter.all)
                 ForEach(viewModel.customers) { customer in
                     Text(customer.name).tag(CustomerFilter.customer(customer.id))
@@ -133,6 +126,14 @@ public struct PropertyListView: View {
             .disabled(!viewModel.canCompare)
             .padding()
             .background(.bar)
+        }
+    }
+
+    private var filterBinding: Binding<CustomerFilter> {
+        return Binding {
+            return viewModel.filter
+        } set: { filter in
+            Task { await viewModel.select(filter) }
         }
     }
 

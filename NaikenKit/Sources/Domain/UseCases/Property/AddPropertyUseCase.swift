@@ -3,6 +3,7 @@ import Foundation
 public struct AddPropertyUseCase: Sendable {
     public enum Failure: Error, Equatable {
         case limitReached(limit: Int)
+        case proRequired
     }
 
     private let repository: any PropertyRepository
@@ -34,6 +35,10 @@ public struct AddPropertyUseCase: Sendable {
 
     public func execute(_ property: Property) async throws -> Property {
         try await checkLimit()
+        let canAssignCustomer = await entitlement.currentEntitlement().canUseCustomerFolders
+        if property.customerID != nil && !canAssignCustomer {
+            throw Failure.proRequired
+        }
         try await repository.save(property)
         return property
     }

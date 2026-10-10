@@ -7,6 +7,7 @@ import Observation
 public final class PropertyEditorViewModel {
     enum Notice: Equatable {
         case limitReached(limit: Int)
+        case proRequired
         case invalidInput(message: String)
         case failed(message: String)
     }
@@ -43,6 +44,10 @@ public final class PropertyEditorViewModel {
         return propertyID == nil
     }
 
+    var canAssignCustomer: Bool {
+        return entitlementState.current.canUseCustomerFolders
+    }
+
     var canSave: Bool {
         return !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isSaving
     }
@@ -54,19 +59,22 @@ public final class PropertyEditorViewModel {
     private let addProperty: AddPropertyUseCase
     private let updateProperty: UpdatePropertyUseCase
     private let fetchCustomers: FetchCustomersUseCase
+    private let entitlementState: any EntitlementState
 
     public init(
         propertyID: UUID?,
         fetchProperty: FetchPropertyUseCase,
         addProperty: AddPropertyUseCase,
         updateProperty: UpdatePropertyUseCase,
-        fetchCustomers: FetchCustomersUseCase
+        fetchCustomers: FetchCustomersUseCase,
+        entitlementState: any EntitlementState
     ) {
         self.propertyID = propertyID
         self.fetchProperty = fetchProperty
         self.addProperty = addProperty
         self.updateProperty = updateProperty
         self.fetchCustomers = fetchCustomers
+        self.entitlementState = entitlementState
     }
 
     // MARK: - Actions
@@ -101,6 +109,8 @@ public final class PropertyEditorViewModel {
             didSave = true
         } catch AddPropertyUseCase.Failure.limitReached(let limit) {
             notice = .limitReached(limit: limit)
+        } catch AddPropertyUseCase.Failure.proRequired, UpdatePropertyUseCase.Failure.proRequired {
+            notice = .proRequired
         } catch {
             notice = .failed(message: error.localizedDescription)
         }

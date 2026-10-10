@@ -6,6 +6,7 @@ import Testing
 @MainActor
 struct PaywallViewModelTests {
     private let unlock = PurchasableProduct(id: ProductID.unlock, displayName: "機能の解除", displayPrice: "¥480")
+    private let pro = PurchasableProduct(id: ProductID.proMonthly, displayName: "Pro", displayPrice: "¥980")
 
     @Test("購入できたら購入状態を読み直して画面を閉じる")
     func purchaseRefreshesEntitlement() async {
@@ -45,11 +46,18 @@ struct PaywallViewModelTests {
         #expect(viewModel.notice == .failed(message: TestFailure.stubbed.localizedDescription) && !viewModel.isPurchasing)
     }
 
-    @Test("解除済みなら買い切りを買えない")
-    func ownedProductCannotBePurchased() {
+    @Test("解除済みなら買い切りは買えないが、Pro は買える")
+    func unlockedUserCanStillBuyPro() {
         let viewModel = makeViewModel(state: EntitlementStateStub(current: .unlocked))
 
-        #expect(!viewModel.canPurchase(unlock))
+        #expect(!viewModel.canPurchase(unlock) && viewModel.canPurchase(pro))
+    }
+
+    @Test("Pro なら買い切りもサブスクも買えない")
+    func proUserCannotBuyAgain() {
+        let viewModel = makeViewModel(state: EntitlementStateStub(current: .pro))
+
+        #expect(!viewModel.canPurchase(unlock) && !viewModel.canPurchase(pro))
     }
 
     @Test("復元したら購入状態を読み直して知らせる")

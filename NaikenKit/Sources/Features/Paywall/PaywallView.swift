@@ -92,17 +92,6 @@ public struct PaywallView: View {
         }
         return "\(product.displayName) \(product.displayPrice)"
     }
-
-    private func isOwned(_ product: PurchasableProduct) -> Bool {
-        switch entitlementStore.current {
-        case .free:
-            return false
-        case .unlocked:
-            return !product.isSubscription
-        case .pro:
-            return true
-        }
-    }
 }
 
 private struct PlanStatusView: View {

@@ -82,15 +82,55 @@ struct PropertyEditorViewModelTests {
         #expect(viewModel.areaText == "1e+20")
     }
 
+    @Test("Pro のときだけ、お客様のフォルダを選ぶ欄を出す", arguments: [(Entitlement.unlocked, false), (.pro, true)])
+    func offersCustomerPickerOnlyForPro(entitlement: Entitlement, expected: Bool) {
+        let viewModel = makeViewModel(repository: PropertyRepositoryMock(), entitlement: entitlement)
+
+        #expect(viewModel.canAssignCustomer == expected)
+    }
+
+    @Test("Pro が切れても、お客様の紐づけを残したまま物件を編集して保存できる")
+    func keepsCustomerAfterProExpires() async {
+        let customerID = UUID()
+        let property = Property(id: UUID(), name: "A棟201", visitedAt: Date(), customerID: customerID, createdAt: Date())
+        let repository = PropertyRepositoryMock(properties: [property])
+        let viewModel = makeViewModel(repository: repository, propertyID: property.id, entitlement: .unlocked)
+        await viewModel.load()
+        viewModel.rentText = "90000"
+
+        await viewModel.save()
+
+        #expect(viewModel.didSave && repository.saved.first?.customerID == customerID)
+    }
+
+    @Test("Pro でないのにお客様のフォルダを付け替えると、Pro が要ると知らせて保存しない")
+    func reassigningCustomerWithoutProShowsNotice() async {
+        let property = Property(id: UUID(), name: "A棟201", visitedAt: Date(), createdAt: Date())
+        let repository = PropertyRepositoryMock(properties: [property])
+        let viewModel = makeViewModel(repository: repository, propertyID: property.id, entitlement: .unlocked)
+        await viewModel.load()
+        viewModel.customerID = UUID()
+
+        await viewModel.save()
+
+        #expect(viewModel.notice == .proRequired && repository.saved.isEmpty)
+    }
+
     // MARK: - Private
 
-    private func makeViewModel(repository: PropertyRepositoryMock, propertyID: UUID? = nil) -> PropertyEditorViewModel {
+    private func makeViewModel(
+        repository: PropertyRepositoryMock,
+        propertyID: UUID? = nil,
+        entitlement: Entitlement = .free
+    ) -> PropertyEditorViewModel {
+        let provider = EntitlementProviderStub(current: entitlement)
         return PropertyEditorViewModel(
             propertyID: propertyID,
             fetchProperty: FetchPropertyUseCase(repository: repository),
-            addProperty: AddPropertyUseCase(repository: repository, entitlement: EntitlementProviderStub(current: .free)),
-            updateProperty: UpdatePropertyUseCase(repository: repository),
-            fetchCustomers: FetchCustomersUseCase(repository: CustomerRepositoryStub())
+            addProperty: AddPropertyUseCase(repository: repository, entitlement: provider),
+            updateProperty: UpdatePropertyUseCase(repository: repository, entitlement: provider),
+            fetchCustomers: FetchCustomersUseCase(repository: CustomerRepositoryStub()),
+            entitlementState: EntitlementStateStub(current: entitlement)
         )
     }
 }

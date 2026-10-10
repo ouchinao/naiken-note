@@ -33,6 +33,10 @@ public final class PropertyListViewModel {
         }
     }
 
+    var showsFolderMenu: Bool {
+        return entitlementState.current.canUseCustomerFolders
+    }
+
     var canStartSelecting: Bool {
         return properties.count >= Limits.comparisonMinimumCount
     }
@@ -48,19 +52,22 @@ public final class PropertyListViewModel {
     private let fetchCustomers: FetchCustomersUseCase
     private let loadPhotoImage: LoadPhotoImageUseCase
     private let storeChanges: any StoreChangeObserving
+    private let entitlementState: any EntitlementState
 
     public init(
         fetchProperties: FetchPropertiesUseCase,
         addProperty: AddPropertyUseCase,
         fetchCustomers: FetchCustomersUseCase,
         loadPhotoImage: LoadPhotoImageUseCase,
-        storeChanges: any StoreChangeObserving
+        storeChanges: any StoreChangeObserving,
+        entitlementState: any EntitlementState
     ) {
         self.fetchProperties = fetchProperties
         self.addProperty = addProperty
         self.fetchCustomers = fetchCustomers
         self.loadPhotoImage = loadPhotoImage
         self.storeChanges = storeChanges
+        self.entitlementState = entitlementState
     }
 
     // MARK: - Actions
@@ -68,6 +75,10 @@ public final class PropertyListViewModel {
     /// サムネイルを読み終えるまで読み込み中の表示を続けないのは、写真の多い物件があっても一覧をすぐに出すため
     func load() async {
         isLoading = true
+        // 絞り込みを残さないのは、Pro が切れるとフォルダのメニューが消えて、ユーザーが解除できなくなるため
+        if !showsFolderMenu {
+            filter = .all
+        }
         do {
             properties = try await fetchProperties.execute(filter: filter)
             customers = try await fetchCustomers.execute()
@@ -96,6 +107,11 @@ public final class PropertyListViewModel {
             notice = .failed(message: error.localizedDescription)
         }
         return false
+    }
+
+    func select(_ filter: CustomerFilter) async {
+        self.filter = filter
+        await load()
     }
 
     func startSelecting() {

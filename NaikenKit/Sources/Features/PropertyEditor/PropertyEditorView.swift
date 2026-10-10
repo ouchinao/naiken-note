@@ -5,7 +5,6 @@ import SwiftUI
 public struct PropertyEditorView: View {
     @State private var viewModel: PropertyEditorViewModel
     @Environment(Router.self) private var router
-    @Environment(EntitlementStore.self) private var entitlementStore
 
     public init(viewModel: PropertyEditorViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -38,14 +37,21 @@ public struct PropertyEditorView: View {
                     isPresented: $viewModel.isNoticePresented,
                     presenting: viewModel.notice
                 ) { notice in
-                    if case .limitReached = notice {
+                    switch notice {
+                    case .limitReached:
                         Button("解除する") { router.present(.paywall) }
+                    case .proRequired:
+                        Button("Proにする") { router.present(.paywall) }
+                    case .invalidInput, .failed:
+                        EmptyView()
                     }
                     Button("閉じる", role: .cancel) {}
                 } message: { notice in
                     switch notice {
                     case .limitReached(let limit):
                         Text("無料版で登録できるのは\(limit)件までです")
+                    case .proRequired:
+                        Text("お客様のフォルダに入れるには Pro が必要です")
                     case .invalidInput(let message), .failed(let message):
                         Text(message)
                     }
@@ -60,7 +66,7 @@ public struct PropertyEditorView: View {
             Section("基本情報") {
                 TextField("物件名(例: A棟201)", text: $viewModel.name)
                 DatePicker("内見日時", selection: $viewModel.visitedAt)
-                if entitlementStore.current.canUseCustomerFolders {
+                if viewModel.canAssignCustomer {
                     customerPicker
                 }
             }
