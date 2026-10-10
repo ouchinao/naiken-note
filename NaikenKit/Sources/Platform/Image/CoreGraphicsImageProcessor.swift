@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 
 /// `UIImage` に読み込んでから縮小しないのは、元画像をメモリに全展開してしまうため
 public struct CoreGraphicsImageProcessor: ImageProcessor {
-    enum Failure: Error {
+    private enum Failure: Error {
         case unreadableImage
         case encodingFailed
     }
