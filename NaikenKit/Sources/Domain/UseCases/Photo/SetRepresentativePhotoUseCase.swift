@@ -1,6 +1,6 @@
 import Foundation
 
-/// 写真を並び順の先頭に移し、比較表の代表写真にする
+/// 代表の印を別に持たず並び順の先頭を代表にするのは、2台の端末で別々に選んでも代表が2枚にならないようにするため
 public struct SetRepresentativePhotoUseCase: Sendable {
     private let repository: any PhotoRepository
 

@@ -26,7 +26,7 @@ public struct ComparisonView: View {
         .safeAreaInset(edge: .bottom) { shareBar }
         .task { await viewModel.load() }
         .onDisappear {
-            // 比較表を共有した直後がいちばん満足度の高い瞬間なので、ここでレビューを依頼する
+            // 起動時などではなくここで頼むのは、比較表を送った直後がいちばん満足している瞬間だから
             if viewModel.hasShared {
                 requestReview()
             }

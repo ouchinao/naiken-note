@@ -3,16 +3,16 @@ import Foundation
 public struct GeoCoordinate: Hashable, Sendable {
     private static let earthRadiusMeters = 6_371_000.0
 
-    public let latitude: Double
-    public let longitude: Double
+    let latitude: Double
+    let longitude: Double
 
     public init(latitude: Double, longitude: Double) {
         self.latitude = latitude
         self.longitude = longitude
     }
 
-    /// 2点間の大円距離(メートル)
-    public func distance(to other: GeoCoordinate) -> Double {
+    /// CLLocation の distance(from:) を使わないのは、Domain に CoreLocation を持ち込まないため
+    func distance(to other: GeoCoordinate) -> Double {
         let fromLatitude = latitude * .pi / 180
         let toLatitude = other.latitude * .pi / 180
         let deltaLatitude = (other.latitude - latitude) * .pi / 180

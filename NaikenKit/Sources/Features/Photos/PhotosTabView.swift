@@ -6,8 +6,8 @@ import SwiftUI
 struct PhotosTabView: View {
     private static let cellMinimumWidth: CGFloat = 100
 
-    @Bindable var viewModel: PhotosTabViewModel
-    let property: Property
+    @Bindable private var viewModel: PhotosTabViewModel
+    private let property: Property
     @Environment(Router.self) private var router
     @State private var pickerItems: [PhotosPickerItem] = []
     @State private var captionTarget: Photo?
@@ -154,7 +154,7 @@ struct PhotosTabView: View {
         Task { await viewModel.changeCaption(of: captionTarget, to: caption) }
     }
 
-    /// 選んだ写真を `Data` にしてから ViewModel に渡す。写真ライブラリの権限は要らない
+    /// PhotoKit で読まずに `PhotosPicker` の `Data` を使うのは、写真ライブラリの権限を求めずに済むため
     private func importPicked(_ items: [PhotosPickerItem]) async {
         if items.isEmpty {
             return

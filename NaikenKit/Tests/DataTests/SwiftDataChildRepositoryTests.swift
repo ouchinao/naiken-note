@@ -4,7 +4,6 @@ import SwiftData
 import Testing
 @testable import Data
 
-/// 採寸メモとチェック結果のRepository
 struct SwiftDataChildRepositoryTests {
     private let container: ModelContainer
     private let property = Property(id: UUID(), name: "子レコードの物件", visitedAt: Date(), createdAt: Date())
@@ -31,11 +30,16 @@ struct SwiftDataChildRepositoryTests {
         let propertyRepository = SwiftDataPropertyRepository(modelContainer: container)
         let repository = SwiftDataMeasurementRepository(modelContainer: container)
         try await propertyRepository.save(property)
-        var measurement = Measurement(id: UUID(), label: "窓の幅", valueMillimeters: 1_690, createdAt: Date())
+        let measurement = Measurement(id: UUID(), label: "窓の幅", valueMillimeters: 1_690, createdAt: Date())
         try await repository.save(measurement, propertyID: property.id)
-        measurement.valueMillimeters = 1_700
+        let remeasured = Measurement(
+            id: measurement.id,
+            label: measurement.label,
+            valueMillimeters: 1_700,
+            createdAt: measurement.createdAt
+        )
 
-        try await repository.save(measurement, propertyID: property.id)
+        try await repository.save(remeasured, propertyID: property.id)
 
         let measurements = try await propertyRepository.fetch(id: property.id)?.measurements ?? []
         #expect(measurements.map(\.valueMillimeters) == [1_700])

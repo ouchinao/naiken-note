@@ -3,6 +3,7 @@ import SwiftData
 
 @Model
 final class PropertyRecord {
+    // @Model はプロパティを計算プロパティに置き換えるので、初期値があっても型は省略できない
     var id: UUID = UUID()
     var name: String = ""
     var rent: Int?

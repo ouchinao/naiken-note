@@ -1,6 +1,5 @@
 import Foundation
 
-/// EXIFの日時文字列("2026:10:01 14:30:00")を `Date` にする。時差がなければ端末のタイムゾーンとみなす
 enum ExifDateParser {
     private static let format = "yyyy:MM:dd HH:mm:ss"
     private static let offsetFormat = "yyyy:MM:dd HH:mm:ssxxx"

@@ -1,7 +1,7 @@
 import Foundation
 @testable import Domain
 
-// export は MainActor からしか呼ばれないので、記録の競合は起きない
+// ほかのモックと違ってロックを持たないのは、export が MainActor からしか呼ばれないため
 final class ComparisonExporterMock: ComparisonExporter, @unchecked Sendable {
     private(set) var exportedEntries: [[ComparisonEntry]] = []
 

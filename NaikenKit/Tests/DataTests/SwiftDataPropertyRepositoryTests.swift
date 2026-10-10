@@ -49,11 +49,11 @@ struct SwiftDataPropertyRepositoryTests {
     @Test("同じ物件を保存し直すと上書きし、件数は増えない")
     func savingAgainUpdatesInPlace() async throws {
         let repository = SwiftDataPropertyRepository(modelContainer: container)
-        var property = Property(id: UUID(), name: "変更前", visitedAt: Date(), createdAt: Date())
+        let property = Property(id: UUID(), name: "変更前", visitedAt: Date(), createdAt: Date())
         try await repository.save(property)
-        property.name = "変更後"
+        let renamed = Property(id: property.id, name: "変更後", visitedAt: property.visitedAt, createdAt: property.createdAt)
 
-        try await repository.save(property)
+        try await repository.save(renamed)
 
         let names = try await repository.fetchAll().map(\.name)
         #expect(names == ["変更後"])

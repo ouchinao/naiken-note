@@ -9,7 +9,6 @@ public struct AddPhotoUseCase: Sendable {
         self.processor = processor
     }
 
-    /// 縮小とサムネイル生成をして保存する。撮影日時はEXIFから取り、なければ現在時刻にする
     public func execute(propertyID: UUID, original: Data, roomTag: Photo.RoomTag) async throws -> Photo {
         async let image = processor.downsized(original, maxPixelSize: ImageSpec.maxPixelSize)
         async let thumbnail = processor.thumbnail(original, maxPixelSize: ImageSpec.thumbnailMaxPixelSize)
@@ -22,7 +21,6 @@ public struct AddPhotoUseCase: Sendable {
 
     // MARK: - Private
 
-    /// 新しい写真は末尾に並べる
     private func nextSortOrder(propertyID: UUID) async throws -> Int {
         let photos = try await repository.photos(propertyID: propertyID)
         guard let last = photos.map(\.sortOrder).max() else {

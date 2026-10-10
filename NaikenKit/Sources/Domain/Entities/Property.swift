@@ -2,17 +2,17 @@ import Foundation
 
 public struct Property: Identifiable, Hashable, Sendable {
     public let id: UUID
-    public var name: String
-    public var rent: Int?
-    public var layout: String
-    public var areaSquareMeters: Double?
-    public var nearestStation: String
-    public var walkMinutes: Int?
-    public var visitedAt: Date
-    public var memo: String
-    public var photos: [Photo]
-    public var measurements: [Measurement]
-    public var checkResults: [CheckResult]
+    public let name: String
+    public let rent: Int?
+    public let layout: String
+    public let areaSquareMeters: Double?
+    public let nearestStation: String
+    public let walkMinutes: Int?
+    public let visitedAt: Date
+    public let memo: String
+    public let photos: [Photo]
+    public let measurements: [Measurement]
+    public let checkResults: [CheckResult]
     public var customerID: UUID?
     public let createdAt: Date
 
@@ -50,12 +50,10 @@ public struct Property: Identifiable, Hashable, Sendable {
 }
 
 extension Property {
-    /// 比較表やリストで使う代表写真。並び順の先頭を代表とする
     public var representativePhoto: Photo? {
         return photos.min { $0.sortOrder < $1.sortOrder }
     }
 
-    /// チェックリストで「○」を付けた項目の数
     public var goodCount: Int {
         return checkResults.filter { $0.rating == .good }.count
     }

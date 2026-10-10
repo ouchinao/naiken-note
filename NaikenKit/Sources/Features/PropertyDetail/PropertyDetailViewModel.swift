@@ -15,7 +15,7 @@ public final class PropertyDetailViewModel {
     private(set) var isLoading = false
     private(set) var hasLoaded = false
     private(set) var isDeleted = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {
@@ -62,7 +62,6 @@ public final class PropertyDetailViewModel {
         }
     }
 
-    /// 保存やiCloudからの同期でストアが変わるたびに読み込み直す。画面を離れると止まる
     func observeChanges() async {
         for await _ in storeChanges.changes {
             try? await Task.sleep(for: StoreChangeDebounce.interval)

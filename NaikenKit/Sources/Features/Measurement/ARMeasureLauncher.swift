@@ -1,8 +1,7 @@
 import SwiftUI
 
-/// AR採寸の画面を作る。ARKitのセッションを用意できるApp層が中身を与え、ARを使えない端末ではnilにする
+/// 採寸画面が AR の画面を直接作らないのは、Features から Platform の ARMeasureSession を参照できないため
 public struct ARMeasureLauncher {
-    /// 画面を閉じるときに、測った値(ミリ)を渡す。キャンセルならnil
     public typealias Completion = @MainActor (Int?) -> Void
 
     let makeView: @MainActor (@escaping Completion) -> AnyView

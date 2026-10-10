@@ -8,7 +8,6 @@ struct PropertyRow: View {
     let property: Property
     let thumbnail: Data?
     let customerName: String?
-    /// 比較する物件を選んでいる間だけ値を持つ
     let isSelected: Bool?
 
     var body: some View {

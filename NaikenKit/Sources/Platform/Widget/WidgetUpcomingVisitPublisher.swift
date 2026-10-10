@@ -2,8 +2,7 @@ import Domain
 import Foundation
 import WidgetKit
 
-/// 次の内見予定を App Group の UserDefaults に書き、ウィジェットを更新する。
-/// ウィジェットはSwiftDataのストアを開かず、ここに書いた内容だけを読む
+/// ウィジェットに SwiftData のストアを開かせないのは、CloudKit と同期しているストアを別のプロセスから開かないようにするため
 public struct WidgetUpcomingVisitPublisher: UpcomingVisitPublishing {
     public init() {}
 

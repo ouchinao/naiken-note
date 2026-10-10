@@ -1,6 +1,5 @@
 import Foundation
 
-/// ウィジェットに表示する次の内見予定
 public struct UpcomingVisit: Identifiable, Codable, Hashable, Sendable {
     public let propertyID: UUID
     public let name: String
@@ -20,7 +19,7 @@ public struct UpcomingVisit: Identifiable, Codable, Hashable, Sendable {
         self.walkMinutes = walkMinutes
     }
 
-    public init(property: Property) {
+    init(property: Property) {
         self.init(
             propertyID: property.id,
             name: property.name,

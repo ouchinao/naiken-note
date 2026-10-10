@@ -1,14 +1,11 @@
 import Foundation
 
-/// 写真ライブラリから内見の写真を選ぶルール
 public enum LibraryScanRule {
-    /// 内見日時の前後この秒数に撮った写真を候補にする
     public static let timeWindow: TimeInterval = 60 * 60
-    /// 内見日時に最も近い写真の撮影地点から、この距離(メートル)以内の写真だけを残す
-    public static let radiusMeters = 500.0
+    /// 物件の住所から位置を引かず、内見日時に最も近い写真の撮影地点を内見場所とみなすのは、住所の入力もジオコーディングの通信も要らないようにするため
+    static let radiusMeters = 500.0
 
-    /// 期間内の写真のうち、内見場所から離れた写真を除いて撮影順に並べる。位置情報のない写真は残す
-    public static func filter(_ candidates: [LibraryPhotoCandidate], around visitAt: Date) -> [LibraryPhotoCandidate] {
+    static func filter(_ candidates: [LibraryPhotoCandidate], around visitAt: Date) -> [LibraryPhotoCandidate] {
         let inWindow = candidates.filter { abs($0.takenAt.timeIntervalSince(visitAt)) <= timeWindow }
         let sorted = inWindow.sorted { $0.takenAt < $1.takenAt }
         guard let anchor = anchorCoordinate(of: inWindow, around: visitAt) else {

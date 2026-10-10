@@ -1,7 +1,6 @@
 import SwiftUI
 import WidgetKit
 
-/// ロック画面・ホーム画面に次の内見予定を出す
 struct UpcomingVisitWidget: Widget {
     private static let kind = "UpcomingVisitWidget"
 

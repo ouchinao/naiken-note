@@ -17,11 +17,10 @@ public final class PropertyListViewModel {
     private(set) var thumbnails: [UUID: Data] = [:]
     private(set) var isLoading = false
     private(set) var hasLoaded = false
-    /// 比較表に並べる物件。選んだ順に並ぶ
     private(set) var selectedIDs: [UUID] = []
     var isSelecting = false
     var filter: CustomerFilter = .all
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {
@@ -77,7 +76,6 @@ public final class PropertyListViewModel {
         }
     }
 
-    /// 保存やiCloudからの同期でストアが変わるたびに読み込み直す。画面を離れると止まる
     func observeChanges() async {
         for await _ in storeChanges.changes {
             try? await Task.sleep(for: StoreChangeDebounce.interval)
@@ -85,7 +83,6 @@ public final class PropertyListViewModel {
         }
     }
 
-    /// 物件を追加できるかを確かめる。上限に達していれば通知を出してfalseを返す
     func prepareToAdd() async -> Bool {
         do {
             try await addProperty.checkLimit()

@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-/// id から1件を引く。`@Attribute(.unique)` が使えないので、重複していても先頭の1件を返す
+/// `@Attribute(.unique)` に頼らないのは、CloudKit と同期するストアでは一意制約を付けられないため。id が重複しても先頭の1件を返す
 extension ModelContext {
     func propertyRecord(id: UUID) throws -> PropertyRecord? {
         var descriptor = FetchDescriptor<PropertyRecord>(predicate: #Predicate { $0.id == id })

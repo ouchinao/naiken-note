@@ -1,6 +1,5 @@
 import Foundation
 
-/// 内見日がこれからの物件を近い順に選び、ウィジェットに渡す
 public struct RefreshUpcomingVisitsUseCase: Sendable {
     private let repository: any PropertyRepository
     private let publisher: any UpcomingVisitPublishing

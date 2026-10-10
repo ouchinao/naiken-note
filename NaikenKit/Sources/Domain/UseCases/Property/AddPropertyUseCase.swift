@@ -13,7 +13,6 @@ public struct AddPropertyUseCase: Sendable {
         self.entitlement = entitlement
     }
 
-    /// 無料枠の上限に達していれば `Failure.limitReached` を投げる。追加画面を開く前の確認に使う
     public func checkLimit() async throws {
         if let limit = await entitlement.current.propertyLimit {
             let count = try await repository.count()

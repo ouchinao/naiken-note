@@ -4,6 +4,7 @@ import SwiftData
 
 @Model
 final class PhotoRecord {
+    // @Model はプロパティを計算プロパティに置き換えるので、初期値があっても型は省略できない
     var id: UUID = UUID()
     @Attribute(.externalStorage) var imageData: Data?
     @Attribute(.externalStorage) var thumbnailData: Data?

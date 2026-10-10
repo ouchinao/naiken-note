@@ -1,7 +1,7 @@
 import Foundation
 import SwiftData
 
-/// 1.0時点のスキーマ。リリース後の変更は追加のみとし、変更するときは SchemaV2 を切る
+/// 公開後はこのスキーマを書き換えないこと。既存のストアが移行なしで開けなくなる。変えるときは SchemaV2 を足す
 enum SchemaV1: VersionedSchema {
     static var versionIdentifier: Schema.Version {
         return Schema.Version(1, 0, 0)

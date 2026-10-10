@@ -23,7 +23,6 @@ extension Property {
 }
 
 extension PropertyRecord {
-    /// 物件そのものの項目を書き込む。顧客と子レコードは Repository が扱う
     func apply(_ property: Property) {
         name = property.name
         rent = property.rent

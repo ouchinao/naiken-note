@@ -23,9 +23,9 @@ public final class PropertyEditorViewModel {
     var memo = ""
     var customerID: UUID?
     private(set) var customers: [Customer] = []
-    private(set) var isSaving = false
+    private var isSaving = false
     private(set) var didSave = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {
@@ -120,7 +120,6 @@ public final class PropertyEditorViewModel {
         customerID = property.customerID
     }
 
-    /// 入力から物件を作る。数値欄に数字以外が入っていればnil
     private func makeProperty() -> Property? {
         guard let rent = NumberInput.integer(from: rentText),
               let area = NumberInput.decimal(from: areaText),
