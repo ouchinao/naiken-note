@@ -21,6 +21,8 @@ public final class PropertyEditorViewModel {
     var walkMinutesText = ""
     var visitedAt = Date()
     var memo = ""
+    var customerID: UUID?
+    private(set) var customers: [Customer] = []
     private(set) var isSaving = false
     private(set) var didSave = false
     var notice: Notice?
@@ -51,23 +53,27 @@ public final class PropertyEditorViewModel {
     private let fetchProperty: FetchPropertyUseCase
     private let addProperty: AddPropertyUseCase
     private let updateProperty: UpdatePropertyUseCase
+    private let fetchCustomers: FetchCustomersUseCase
 
     public init(
         propertyID: UUID?,
         fetchProperty: FetchPropertyUseCase,
         addProperty: AddPropertyUseCase,
-        updateProperty: UpdatePropertyUseCase
+        updateProperty: UpdatePropertyUseCase,
+        fetchCustomers: FetchCustomersUseCase
     ) {
         self.propertyID = propertyID
         self.fetchProperty = fetchProperty
         self.addProperty = addProperty
         self.updateProperty = updateProperty
+        self.fetchCustomers = fetchCustomers
     }
 
     // MARK: - Actions
 
     func load() async {
         do {
+            customers = try await fetchCustomers.execute()
             if let propertyID, let property = try await fetchProperty.execute(id: propertyID) {
                 original = property
                 fill(from: property)
@@ -111,6 +117,7 @@ public final class PropertyEditorViewModel {
         walkMinutesText = property.walkMinutes.map(String.init) ?? ""
         visitedAt = property.visitedAt
         memo = property.memo
+        customerID = property.customerID
     }
 
     /// 入力から物件を作る。数値欄に数字以外が入っていればnil
@@ -133,6 +140,7 @@ public final class PropertyEditorViewModel {
             photos: original?.photos ?? [],
             measurements: original?.measurements ?? [],
             checkResults: original?.checkResults ?? [],
+            customerID: customerID,
             createdAt: original?.createdAt ?? Date()
         )
     }

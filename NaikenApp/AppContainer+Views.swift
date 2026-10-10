@@ -17,6 +17,8 @@ extension AppContainer {
             ComparisonView(viewModel: makeComparisonViewModel(propertyIDs: ids))
         case .settings:
             SettingsView(viewModel: makeSettingsViewModel())
+        case .customers:
+            CustomersView(viewModel: makeCustomersViewModel())
         }
     }
 

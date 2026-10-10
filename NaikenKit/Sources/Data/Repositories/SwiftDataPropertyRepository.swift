@@ -27,6 +27,7 @@ actor SwiftDataPropertyRepository: PropertyRepository {
         )
         modelContext.insert(record)
         record.apply(property)
+        record.customer = try property.customerID.flatMap(modelContext.customerRecord(id:))
         try modelContext.save()
         StoreChangeObserver.postLocalChange()
     }

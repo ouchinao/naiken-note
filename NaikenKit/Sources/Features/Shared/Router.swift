@@ -9,6 +9,7 @@ public final class Router {
         case propertyDetail(id: UUID)
         case comparison(ids: [UUID])
         case settings
+        case customers
     }
 
     public enum Sheet: Identifiable {

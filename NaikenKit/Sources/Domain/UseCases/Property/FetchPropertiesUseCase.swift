@@ -8,7 +8,8 @@ public struct FetchPropertiesUseCase: Sendable {
     }
 
     /// 内見日の新しい順に返す
-    public func execute() async throws -> [Property] {
-        return try await repository.fetchAll()
+    public func execute(filter: CustomerFilter = .all) async throws -> [Property] {
+        let properties = try await repository.fetchAll()
+        return properties.filter { filter.includes($0) }
     }
 }

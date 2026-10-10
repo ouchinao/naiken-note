@@ -20,4 +20,10 @@ extension ModelContext {
         descriptor.fetchLimit = 1
         return try fetch(descriptor).first
     }
+
+    func customerRecord(id: UUID) throws -> CustomerRecord? {
+        var descriptor = FetchDescriptor<CustomerRecord>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        return try fetch(descriptor).first
+    }
 }

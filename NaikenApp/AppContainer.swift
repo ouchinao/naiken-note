@@ -33,6 +33,7 @@ final class AppContainer {
         return PropertyListViewModel(
             fetchProperties: FetchPropertiesUseCase(repository: repositories.properties),
             addProperty: addProperty,
+            fetchCustomers: fetchCustomers,
             loadPhotoImage: loadPhotoImage,
             storeChanges: storeChanges
         )
@@ -43,7 +44,8 @@ final class AppContainer {
             propertyID: propertyID,
             fetchProperty: fetchProperty,
             addProperty: addProperty,
-            updateProperty: UpdatePropertyUseCase(repository: repositories.properties)
+            updateProperty: UpdatePropertyUseCase(repository: repositories.properties),
+            fetchCustomers: fetchCustomers
         )
     }
 
@@ -132,6 +134,15 @@ final class AppContainer {
         )
     }
 
+    func makeCustomersViewModel() -> CustomersViewModel {
+        return CustomersViewModel(
+            fetchCustomers: fetchCustomers,
+            saveCustomer: SaveCustomerUseCase(repository: repositories.customers, entitlement: entitlementStore),
+            deleteCustomer: DeleteCustomerUseCase(repository: repositories.customers),
+            storeChanges: storeChanges
+        )
+    }
+
     /// ARを使えない端末ではnilを返し、採寸画面にARのボタンを出さない
     func makeARMeasureLauncher() -> ARMeasureLauncher? {
         if !ARMeasureSession.isSupported {
@@ -167,6 +178,10 @@ final class AppContainer {
 
     private var addProperty: AddPropertyUseCase {
         return AddPropertyUseCase(repository: repositories.properties, entitlement: entitlementStore)
+    }
+
+    private var fetchCustomers: FetchCustomersUseCase {
+        return FetchCustomersUseCase(repository: repositories.customers)
     }
 
     private var addPhoto: AddPhotoUseCase {

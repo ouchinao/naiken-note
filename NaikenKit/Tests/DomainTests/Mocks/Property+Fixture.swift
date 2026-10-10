@@ -6,7 +6,8 @@ extension Property {
         name: String = "テスト物件",
         visitedAt: Date = Date(timeIntervalSince1970: 1_800_000_000),
         photos: [Photo] = [],
-        checkResults: [CheckResult] = []
+        checkResults: [CheckResult] = [],
+        customerID: UUID? = nil
     ) -> Property {
         return Property(
             id: UUID(),
@@ -14,6 +15,7 @@ extension Property {
             visitedAt: visitedAt,
             photos: photos,
             checkResults: checkResults,
+            customerID: customerID,
             createdAt: Date(timeIntervalSince1970: 1_800_000_000)
         )
     }

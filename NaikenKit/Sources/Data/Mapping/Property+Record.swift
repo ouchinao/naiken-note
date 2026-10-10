@@ -16,13 +16,14 @@ extension Property {
             photos: (record.photos ?? []).map(Photo.init(record:)).sorted { $0.sortOrder < $1.sortOrder },
             measurements: (record.measurements ?? []).map(Measurement.init(record:)).sorted { $0.createdAt < $1.createdAt },
             checkResults: (record.checkResults ?? []).map(CheckResult.init(record:)),
+            customerID: record.customer?.id,
             createdAt: record.createdAt
         )
     }
 }
 
 extension PropertyRecord {
-    /// 物件そのものの項目を書き込む。子レコードは Repository が扱う
+    /// 物件そのものの項目を書き込む。顧客と子レコードは Repository が扱う
     func apply(_ property: Property) {
         name = property.name
         rent = property.rent

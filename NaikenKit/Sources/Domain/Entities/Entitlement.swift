@@ -29,4 +29,8 @@ public enum Entitlement: Sendable {
     public var canExportComparison: Bool {
         return self != .free
     }
+
+    public var canUseCustomerFolders: Bool {
+        return self == .pro
+    }
 }

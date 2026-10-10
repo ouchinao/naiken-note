@@ -53,6 +53,7 @@ struct PropertyListViewModelTests {
         return PropertyListViewModel(
             fetchProperties: FetchPropertiesUseCase(repository: repository),
             addProperty: AddPropertyUseCase(repository: repository, entitlement: EntitlementProviderStub(current: .free)),
+            fetchCustomers: FetchCustomersUseCase(repository: CustomerRepositoryStub()),
             loadPhotoImage: LoadPhotoImageUseCase(repository: PhotoRepositoryStub()),
             storeChanges: StoreChangeObservingStub()
         )

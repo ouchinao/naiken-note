@@ -5,6 +5,7 @@ import SwiftUI
 public struct PropertyEditorView: View {
     @State private var viewModel: PropertyEditorViewModel
     @Environment(Router.self) private var router
+    @Environment(EntitlementStore.self) private var entitlementStore
 
     public init(viewModel: PropertyEditorViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -59,6 +60,9 @@ public struct PropertyEditorView: View {
             Section("基本情報") {
                 TextField("物件名(例: A棟201)", text: $viewModel.name)
                 DatePicker("内見日時", selection: $viewModel.visitedAt)
+                if entitlementStore.current.canUseCustomerFolders {
+                    customerPicker
+                }
             }
             Section("条件") {
                 numberField("家賃", unit: "円", placeholder: "85000", text: $viewModel.rentText, keyboard: .numberPad)
@@ -70,6 +74,15 @@ public struct PropertyEditorView: View {
             Section("メモ") {
                 TextField("気づいたこと", text: $viewModel.memo, axis: .vertical)
                     .lineLimit(3...8)
+            }
+        }
+    }
+
+    private var customerPicker: some View {
+        Picker("顧客フォルダ", selection: $viewModel.customerID) {
+            Text("未分類").tag(UUID?.none)
+            ForEach(viewModel.customers) { customer in
+                Text(customer.name).tag(UUID?.some(customer.id))
             }
         }
     }

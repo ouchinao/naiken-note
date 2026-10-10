@@ -46,7 +46,8 @@ struct PropertyEditorViewModelTests {
             propertyID: nil,
             fetchProperty: FetchPropertyUseCase(repository: repository),
             addProperty: AddPropertyUseCase(repository: repository, entitlement: EntitlementProviderStub(current: .free)),
-            updateProperty: UpdatePropertyUseCase(repository: repository)
+            updateProperty: UpdatePropertyUseCase(repository: repository),
+            fetchCustomers: FetchCustomersUseCase(repository: CustomerRepositoryStub())
         )
     }
 }

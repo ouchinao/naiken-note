@@ -5,6 +5,7 @@ import SwiftUI
 public struct PropertyListView: View {
     @State private var viewModel: PropertyListViewModel
     @Environment(Router.self) private var router
+    @Environment(EntitlementStore.self) private var entitlementStore
 
     public init(viewModel: PropertyListViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -17,6 +18,15 @@ public struct PropertyListView: View {
             .safeAreaInset(edge: .bottom) { compareBar }
             .task { await viewModel.load() }
             .task { await viewModel.observeChanges() }
+            .onChange(of: viewModel.filter) {
+                Task { await viewModel.load() }
+            }
+            .onChange(of: entitlementStore.current) { _, entitlement in
+                // Proが切れたらフォルダのメニューが消えるので、絞り込みも外す
+                if !entitlement.canUseCustomerFolders {
+                    viewModel.filter = .all
+                }
+            }
             .alert(
                 "確認",
                 isPresented: $viewModel.isNoticePresented,
@@ -54,6 +64,7 @@ public struct PropertyListView: View {
                     PropertyRow(
                         property: property,
                         thumbnail: viewModel.thumbnails[property.id],
+                        customerName: viewModel.customerName(of: property),
                         isSelected: viewModel.isSelecting ? viewModel.isSelected(property) : nil
                     )
                 }
@@ -76,6 +87,11 @@ public struct PropertyListView: View {
                 Label("設定", systemImage: "gearshape")
             }
         }
+        if entitlementStore.current.canUseCustomerFolders {
+            ToolbarItem(placement: .topBarLeading) {
+                folderMenu
+            }
+        }
         ToolbarItemGroup(placement: .topBarTrailing) {
             if viewModel.isSelecting {
                 Button("キャンセル") { viewModel.finishSelecting() }
@@ -88,6 +104,20 @@ public struct PropertyListView: View {
                     Label("物件を追加", systemImage: "plus")
                 }
             }
+        }
+    }
+
+    private var folderMenu: some View {
+        Menu {
+            Picker("フォルダ", selection: $viewModel.filter) {
+                Text("すべて").tag(CustomerFilter.all)
+                ForEach(viewModel.customers) { customer in
+                    Text(customer.name).tag(CustomerFilter.customer(customer.id))
+                }
+                Text("未分類").tag(CustomerFilter.unassigned)
+            }
+        } label: {
+            Label("フォルダ", systemImage: "folder")
         }
     }
 

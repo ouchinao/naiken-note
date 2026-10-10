@@ -13,12 +13,14 @@ public final class PropertyListViewModel {
     // MARK: - State
 
     private(set) var properties: [Property] = []
+    private(set) var customers: [Customer] = []
     private(set) var thumbnails: [UUID: Data] = [:]
     private(set) var isLoading = false
     private(set) var hasLoaded = false
     /// 比較表に並べる物件。選んだ順に並ぶ
     private(set) var selectedIDs: [UUID] = []
     var isSelecting = false
+    var filter: CustomerFilter = .all
     var notice: Notice?
 
     var isNoticePresented: Bool {
@@ -40,17 +42,20 @@ public final class PropertyListViewModel {
 
     private let fetchProperties: FetchPropertiesUseCase
     private let addProperty: AddPropertyUseCase
+    private let fetchCustomers: FetchCustomersUseCase
     private let loadPhotoImage: LoadPhotoImageUseCase
     private let storeChanges: any StoreChangeObserving
 
     public init(
         fetchProperties: FetchPropertiesUseCase,
         addProperty: AddPropertyUseCase,
+        fetchCustomers: FetchCustomersUseCase,
         loadPhotoImage: LoadPhotoImageUseCase,
         storeChanges: any StoreChangeObserving
     ) {
         self.fetchProperties = fetchProperties
         self.addProperty = addProperty
+        self.fetchCustomers = fetchCustomers
         self.loadPhotoImage = loadPhotoImage
         self.storeChanges = storeChanges
     }
@@ -64,7 +69,8 @@ public final class PropertyListViewModel {
             hasLoaded = true
         }
         do {
-            properties = try await fetchProperties.execute()
+            properties = try await fetchProperties.execute(filter: filter)
+            customers = try await fetchCustomers.execute()
             await loadThumbnails()
         } catch {
             notice = .failed(message: error.localizedDescription)
@@ -107,6 +113,10 @@ public final class PropertyListViewModel {
     func finishSelecting() {
         isSelecting = false
         selectedIDs = []
+    }
+
+    func customerName(of property: Property) -> String? {
+        return customers.first { $0.id == property.customerID }?.name
     }
 
     // MARK: - Private

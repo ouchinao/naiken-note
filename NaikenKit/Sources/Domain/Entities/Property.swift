@@ -13,6 +13,7 @@ public struct Property: Identifiable, Hashable, Sendable {
     public var photos: [Photo]
     public var measurements: [Measurement]
     public var checkResults: [CheckResult]
+    public var customerID: UUID?
     public let createdAt: Date
 
     public init(
@@ -28,6 +29,7 @@ public struct Property: Identifiable, Hashable, Sendable {
         photos: [Photo] = [],
         measurements: [Measurement] = [],
         checkResults: [CheckResult] = [],
+        customerID: UUID? = nil,
         createdAt: Date
     ) {
         self.id = id
@@ -42,6 +44,7 @@ public struct Property: Identifiable, Hashable, Sendable {
         self.photos = photos
         self.measurements = measurements
         self.checkResults = checkResults
+        self.customerID = customerID
         self.createdAt = createdAt
     }
 }

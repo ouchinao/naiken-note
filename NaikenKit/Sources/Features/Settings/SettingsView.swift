@@ -17,6 +17,11 @@ public struct SettingsView: View {
                 LabeledContent("状態", value: cloudStatusText)
             }
             purchaseSection
+            if entitlementStore.current.canUseCustomerFolders {
+                Section("Pro") {
+                    Button("顧客フォルダを管理") { router.push(.customers) }
+                }
+            }
             Section("サポート") {
                 if let contact = AppLinks.contact {
                     Link("問い合わせ", destination: contact)
@@ -46,7 +51,7 @@ public struct SettingsView: View {
     private var purchaseSection: some View {
         Section("購入") {
             LabeledContent("プラン", value: planText)
-            if entitlementStore.current == .free {
+            if entitlementStore.current != .pro {
                 Button("機能を解除する") { router.present(.paywall) }
             }
             Button("購入を復元") {
