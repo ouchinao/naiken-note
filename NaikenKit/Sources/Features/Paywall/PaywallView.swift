@@ -2,7 +2,6 @@ import DesignSystem
 import Domain
 import SwiftUI
 
-/// 「無料版でできること / 解除で増えること」を並べ、購入前に価格を明示する
 public struct PaywallView: View {
     @State private var viewModel: PaywallViewModel
     @Environment(Router.self) private var router

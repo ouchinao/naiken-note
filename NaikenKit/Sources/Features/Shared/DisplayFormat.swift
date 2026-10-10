@@ -1,7 +1,6 @@
 import Domain
 import Foundation
 
-/// 物件の数値を画面表示用の文字列にする
 enum DisplayFormat {
     static func rent(_ rent: Int?) -> String {
         guard let rent else {

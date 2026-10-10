@@ -1,7 +1,6 @@
 import Domain
 import Foundation
 
-/// 購入状態を固定で返す。updates は何も流さずに終わる
 struct PurchaseServiceStub: PurchaseService {
     var entitlements: Set<String> = []
 
@@ -15,7 +14,7 @@ struct PurchaseServiceStub: PurchaseService {
         return []
     }
 
-    func purchase(_ productID: String) async throws -> PurchaseOutcome {
+    func purchase(_: String) async throws -> PurchaseOutcome {
         return .purchased
     }
 

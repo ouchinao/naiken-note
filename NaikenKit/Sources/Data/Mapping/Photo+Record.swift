@@ -14,7 +14,6 @@ extension Photo {
 }
 
 extension PhotoRecord {
-    /// タグ・キャプション・撮影日時・並び順を書き込む。画像は変えない
     func apply(_ photo: Photo) {
         roomTag = photo.roomTag.rawValue
         caption = photo.caption

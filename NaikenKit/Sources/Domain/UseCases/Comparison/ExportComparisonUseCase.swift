@@ -1,6 +1,5 @@
 import Foundation
 
-/// 比較表を画像にする。有料機能なので、解錠されていなければ `Failure.locked` を投げる
 public struct ExportComparisonUseCase: Sendable {
     public enum Failure: Error, Equatable {
         case locked

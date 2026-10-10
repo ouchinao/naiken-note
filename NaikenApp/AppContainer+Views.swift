@@ -1,7 +1,6 @@
 import Features
 import SwiftUI
 
-/// どの画面を作るかを知っているのはApp層だけ
 extension AppContainer {
     @ViewBuilder
     func makeView(for route: Router.Route) -> some View {

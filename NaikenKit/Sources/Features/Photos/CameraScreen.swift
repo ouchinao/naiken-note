@@ -1,7 +1,6 @@
 import DesignSystem
 import SwiftUI
 
-/// 物件詳細から開くカメラ。続けて何枚でも撮れ、キャンセルで閉じる
 public struct CameraScreen: View {
     private static let toastDuration: Duration = .seconds(1.5)
 
@@ -47,7 +46,7 @@ public struct CameraScreen: View {
     @ViewBuilder
     private var content: some View {
         if CameraView.isAvailable {
-            // 撮影のたびに作り直し、次の1枚をすぐ撮れるようにする
+            // UIImagePickerController を使い回さないのは、1枚撮ると撮影の画面に戻らないため
             CameraView { data in
                 captureCount += 1
                 Task { await viewModel.save(data) }

@@ -16,7 +16,7 @@ public struct Photo: Identifiable, Hashable, Sendable {
     public let id: UUID
     public var roomTag: RoomTag
     public var caption: String
-    public var takenAt: Date
+    public let takenAt: Date
     public var sortOrder: Int
 
     public init(id: UUID, roomTag: RoomTag, caption: String = "", takenAt: Date, sortOrder: Int = 0) {

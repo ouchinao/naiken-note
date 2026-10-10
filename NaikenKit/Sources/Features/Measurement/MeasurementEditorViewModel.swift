@@ -18,7 +18,7 @@ public final class MeasurementEditorViewModel {
     var photoID: UUID?
     private(set) var photos: [Photo] = []
     private(set) var didSave = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

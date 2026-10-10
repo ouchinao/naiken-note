@@ -1,6 +1,5 @@
 import Foundation
 
-/// 選んだ物件を比較表の列にする。列の順番は選んだ順
 public struct BuildComparisonUseCase: Sendable {
     public enum Failure: Error, Equatable {
         case invalidSelection(count: Int)

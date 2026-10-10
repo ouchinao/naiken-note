@@ -1,6 +1,6 @@
 import Foundation
 
 enum RepositoryError: Error {
-    /// 紐づけ先の物件が見つからない。別の端末で削除された直後などに起きる
+    /// クラッシュさせずにエラーにするのは、別の端末で物件が消された直後に起こりうるため
     case propertyNotFound
 }

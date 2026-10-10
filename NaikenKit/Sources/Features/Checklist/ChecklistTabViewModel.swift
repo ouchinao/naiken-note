@@ -11,7 +11,7 @@ public final class ChecklistTabViewModel {
 
     // MARK: - State
 
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {
