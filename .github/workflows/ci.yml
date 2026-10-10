@@ -1,0 +1,114 @@
+name: CI
+
+on:
+  push:
+  workflow_dispatch:
+
+concurrency:
+  group: ci-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  check:
+    name: Dependencies, lint, test and build
+    runs-on: macos-latest
+    timeout-minutes: 60
+    env:
+      # 取得した Swift パッケージの置き場所。SwiftLint の本体もここにあるもの(ビルドプラグインと同じ版)を使う
+      PACKAGES_DIR: ${{ github.workspace }}/.spm
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Show Xcode version
+        run: xcodebuild -version
+
+      # 層の依存方向と、外部パッケージを SwiftLint 以外入れないことを確かめる
+      - name: Check dependency rules
+        run: python3 scripts/check-dependencies.py
+
+      # コミットされた Package.resolved のバージョンだけを使う。解決で書き換わったら失敗にする
+      - name: Resolve packages
+        run: |
+          xcodebuild -resolvePackageDependencies \
+            -project NaikenNote.xcodeproj \
+            -scheme NaikenNote \
+            -clonedSourcePackagesDirPath "$PACKAGES_DIR" \
+            -onlyUsePackageVersionsFromResolvedFile
+          (cd NaikenKit && xcodebuild -resolvePackageDependencies \
+            -scheme NaikenKit \
+            -clonedSourcePackagesDirPath "$PACKAGES_DIR" \
+            -onlyUsePackageVersionsFromResolvedFile)
+          git diff --exit-code -- '*Package.resolved'
+
+      # 警告も失敗として扱う。層ごとの import の制限もここで効く
+      - name: SwiftLint
+        run: |
+          swiftlint=$(find "$PACKAGES_DIR/artifacts" -type f -name swiftlint -perm -u+x | head -n 1)
+          if [ -z "$swiftlint" ]; then
+            echo "SwiftLint の本体が見つかりません"
+            exit 1
+          fi
+          "$swiftlint" version
+          "$swiftlint" lint --strict
+          # import の制限が効いていることを確かめる。Features から Data を import したらエラーにならなければいけない
+          probe=NaikenKit/Sources/Features/ImportRuleProbe.swift
+          echo "import Data" > "$probe"
+          if "$swiftlint" lint --strict --quiet "$probe"; then
+            echo "Features から Data を import してもエラーになりません。.swiftlint.yml の custom_rules を確かめてください"
+            exit 1
+          fi
+          rm "$probe"
+
+      - name: Pick an iPhone simulator
+        id: simulator
+        run: |
+          udid=$(xcrun simctl list devices available --json | python3 -c '
+          import json, sys
+          devices = json.load(sys.stdin)["devices"]
+          for runtime, items in sorted(devices.items(), reverse=True):
+              if "iOS" not in runtime:
+                  continue
+              for item in items:
+                  if item["name"].startswith("iPhone"):
+                      print(item["udid"])
+                      sys.exit(0)
+          sys.exit("No iPhone simulator found")
+          ')
+          echo "udid=$udid" >> "$GITHUB_OUTPUT"
+
+      - name: Test NaikenKit
+        working-directory: NaikenKit
+        run: |
+          set +e
+          xcodebuild test \
+            -scheme NaikenKit \
+            -destination "platform=iOS Simulator,id=${{ steps.simulator.outputs.udid }}" \
+            -clonedSourcePackagesDirPath "$PACKAGES_DIR" \
+            -onlyUsePackageVersionsFromResolvedFile \
+            -skipPackagePluginValidation > ../test.log 2>&1
+          status=$?
+          grep -E "Test run with|Suite .* (passed|failed)|✘|error:|warning: .*\.swift" ../test.log | sort -u | tail -150
+          exit $status
+
+      - name: Build app
+        run: |
+          set -o pipefail
+          xcodebuild build \
+            -project NaikenNote.xcodeproj \
+            -scheme NaikenNote \
+            -destination "generic/platform=iOS Simulator" \
+            -clonedSourcePackagesDirPath "$PACKAGES_DIR" \
+            -onlyUsePackageVersionsFromResolvedFile \
+            -skipPackagePluginValidation \
+            -quiet \
+            CODE_SIGNING_ALLOWED=NO 2>&1 | tee build.log
+
+      - name: Summarize errors
+        if: failure()
+        run: |
+          for log in test.log build.log; do
+            if [ -f "$log" ]; then
+              echo "=== $log ==="
+              grep -E "error:|✘|Fail|failed" "$log" | sort -u | head -200 || true
+            fi
+          done
