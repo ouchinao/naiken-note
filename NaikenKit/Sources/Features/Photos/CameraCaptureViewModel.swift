@@ -12,7 +12,7 @@ public final class CameraCaptureViewModel {
     // MARK: - State
 
     private(set) var savedCount = 0
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {
@@ -37,7 +37,6 @@ public final class CameraCaptureViewModel {
 
     // MARK: - Actions
 
-    /// 撮るたびに呼ぶ。物件詳細から開いたカメラなので、写真はその物件に自動で紐づく
     func save(_ image: Data) async {
         do {
             _ = try await addPhoto.execute(propertyID: propertyID, original: image, roomTag: .other)

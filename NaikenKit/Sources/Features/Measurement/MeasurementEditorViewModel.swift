@@ -18,7 +18,7 @@ public final class MeasurementEditorViewModel {
     var photoID: UUID?
     private(set) var photos: [Photo] = []
     private(set) var didSave = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {
@@ -75,7 +75,7 @@ public final class MeasurementEditorViewModel {
         }
     }
 
-    /// AR測定の結果を寸法欄に入れる。保存前に手で直せる
+    /// 測った値をそのまま保存しないのは、LiDAR のない機種では誤差が大きく、保存前に手で直せるようにするため
     func applyMeasured(millimeters: Int) {
         valueText = String(millimeters)
     }

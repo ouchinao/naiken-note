@@ -3,7 +3,7 @@ import Foundation
 import ImageIO
 import UniformTypeIdentifiers
 
-/// テスト用のJPEGをその場で作る
+/// 画像ファイルを同梱せずその場で作るのは、撮影日時や時差の有無をテストごとに変えるため
 enum JPEGFixture {
     enum Failure: Error {
         case drawingFailed

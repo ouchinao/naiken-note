@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// 画面の主な操作に使う、横幅いっぱいの塗りボタン
 public struct PrimaryButtonStyle: ButtonStyle {
     private static let pressedOpacity = 0.7
     private static let disabledOpacity = 0.4

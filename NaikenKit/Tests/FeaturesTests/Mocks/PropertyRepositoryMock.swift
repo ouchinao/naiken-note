@@ -1,7 +1,7 @@
 import Domain
 import Foundation
 
-// テストからは逐次呼ぶだけだが、記録はロックで守ってから @unchecked Sendable にする
+// ロックを省かないのは、@unchecked Sendable でコンパイラによる並行アクセスのチェックを外しているため
 final class PropertyRepositoryMock: PropertyRepository, @unchecked Sendable {
     private(set) var saved: [Property] = []
 
@@ -32,5 +32,5 @@ final class PropertyRepositoryMock: PropertyRepository, @unchecked Sendable {
         }
     }
 
-    func delete(id: UUID) async throws {}
+    func delete(id _: UUID) async throws {}
 }

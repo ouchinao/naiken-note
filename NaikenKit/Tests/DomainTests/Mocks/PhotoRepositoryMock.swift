@@ -1,7 +1,7 @@
 import Foundation
 @testable import Domain
 
-// テストからは逐次呼ぶだけだが、記録はロックで守ってから @unchecked Sendable にする
+// ロックを省かないのは、@unchecked Sendable でコンパイラによる並行アクセスのチェックを外しているため
 final class PhotoRepositoryMock: PhotoRepository, @unchecked Sendable {
     struct SavedPhoto {
         let photo: Photo
@@ -41,7 +41,7 @@ final class PhotoRepositoryMock: PhotoRepository, @unchecked Sendable {
         }
     }
 
-    func photos(propertyID: UUID) async throws -> [Photo] {
+    func photos(propertyID _: UUID) async throws -> [Photo] {
         return existingPhotos
     }
 

@@ -5,7 +5,7 @@ import Foundation
 import Platform
 import SwiftUI
 
-/// 依存の組み立てをすべてここに集める。Data層とPlatform層の具象型を知っているのはこの型だけ
+/// ViewModel や UseCase を各画面で作らないのは、Data と Platform の具象型を Features から見えなくするため
 @MainActor
 final class AppContainer {
     let router = Router()
@@ -132,7 +132,6 @@ final class AppContainer {
         )
     }
 
-    /// ARを使えない端末ではnilを返し、採寸画面にARのボタンを出さない
     func makeARMeasureLauncher() -> ARMeasureLauncher? {
         if !ARMeasureSession.isSupported {
             return nil

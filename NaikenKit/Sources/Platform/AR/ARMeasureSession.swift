@@ -2,7 +2,6 @@ import ARKit
 import Domain
 import Foundation
 
-/// ARSessionの開始・raycast・2点間の距離計算を担う。画面の表示はFeatures層の ARMeasureView が受け持つ
 @MainActor
 public final class ARMeasureSession: ARMeasuring {
     private static let millimetersPerMeter = 1_000.0
@@ -12,7 +11,7 @@ public final class ARMeasureSession: ARMeasuring {
         return ARWorldTrackingConfiguration.isSupported
     }
 
-    /// ARMeasureView がカメラ映像を描くために使う
+    /// ARMeasuring の外に ARSession を出しているのは、ARSCNView がカメラ映像を描くのに ARSession そのものが要るため
     public let session = ARSession()
 
     public var isLiDARAvailable: Bool {

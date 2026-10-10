@@ -3,8 +3,8 @@ import Domain
 import SwiftUI
 
 struct MeasurementsTabView: View {
-    @Bindable var viewModel: MeasurementsTabViewModel
-    let property: Property
+    @Bindable private var viewModel: MeasurementsTabViewModel
+    private let property: Property
     @Environment(Router.self) private var router
 
     init(viewModel: MeasurementsTabViewModel, property: Property) {

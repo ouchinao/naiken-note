@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// 画面遷移を一元管理する。Viewは遷移先を名前で指定するだけで、どのViewを作るかはApp層が決める
+/// 遷移先を View ではなく名前で持つのは、Features が遷移先の画面の依存を組み立てずに済むようにするため
 @MainActor
 @Observable
 public final class Router {
@@ -51,23 +51,23 @@ public final class Router {
 
     public init() {}
 
-    public func push(_ route: Route) {
+    func push(_ route: Route) {
         path.append(route)
     }
 
-    public func pop() {
+    func pop() {
         _ = path.popLast()
     }
 
-    public func present(_ sheet: Sheet) {
+    func present(_ sheet: Sheet) {
         self.sheet = sheet
     }
 
-    public func presentFullScreen(_ screen: FullScreen) {
+    func presentFullScreen(_ screen: FullScreen) {
         fullScreen = screen
     }
 
-    public func dismiss() {
+    func dismiss() {
         sheet = nil
         fullScreen = nil
     }

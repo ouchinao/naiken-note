@@ -2,8 +2,7 @@ import Domain
 import Foundation
 import Observation
 
-/// 購入状態を保持する。Paywallなどの画面はこれを描くだけで、購入処理の結果を自分で判断しない。
-/// `EntitlementProvider` に適合するので、UseCaseにそのまま注入できる
+/// 購入の結果を Paywall で判断しないのは、復元や別の端末での購入、承認待ちだった購入でも状態を1か所で揃えるため
 @MainActor
 @Observable
 public final class EntitlementStore: EntitlementProvider {
@@ -22,8 +21,8 @@ public final class EntitlementStore: EntitlementProvider {
         }
     }
 
-    /// 購入や復元の直後に呼ぶ。`Transaction.updates` はアプリ内で完了した購入を流さないため
-    public func refresh() async {
+    /// `Transaction.updates` を待たずに読み直すのは、アプリ内で完了した購入は updates に流れないため
+    func refresh() async {
         apply(await purchaseService.currentEntitlements())
     }
 

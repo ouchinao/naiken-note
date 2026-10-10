@@ -13,9 +13,8 @@ public final class PhotosTabViewModel {
 
     private(set) var thumbnails: [UUID: Data] = [:]
     private(set) var isImporting = false
-    /// 部屋タグでの絞り込み。nilならすべて
     var selectedTag: Photo.RoomTag?
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {
@@ -67,7 +66,6 @@ public final class PhotosTabViewModel {
         }
     }
 
-    /// 写真ピッカーで選んだ画像を取り込む。絞り込み中ならそのタグを付ける
     func importPhotos(_ images: [Data], into propertyID: UUID) async {
         isImporting = true
         defer {

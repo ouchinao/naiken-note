@@ -3,9 +3,9 @@ import Foundation
 import ImageIO
 import UniformTypeIdentifiers
 
-/// `CGImageSourceCreateThumbnailAtIndex` で縮小するので、元画像をメモリに全展開しない
+/// `UIImage` に読み込んでから縮小しないのは、元画像をメモリに全展開してしまうため
 public struct CoreGraphicsImageProcessor: ImageProcessor {
-    public enum Failure: Error {
+    enum Failure: Error {
         case unreadableImage
         case encodingFailed
     }

@@ -1,6 +1,6 @@
 import Foundation
 
-/// 写真の画像データを取り出す。`Photo` は画像を持たないので、必要な画面だけがこれを使う
+/// `Photo` に画像を持たせないのは、一覧や比較表を出すたびに全写真の画像をメモリに読み込まないため
 public struct LoadPhotoImageUseCase: Sendable {
     public enum Variant: Sendable {
         case thumbnail

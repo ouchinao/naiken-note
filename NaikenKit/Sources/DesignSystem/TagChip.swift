@@ -1,6 +1,5 @@
 import SwiftUI
 
-/// 部屋タグなどの短いラベル
 public struct TagChip: View {
     private let title: String
     private let isSelected: Bool

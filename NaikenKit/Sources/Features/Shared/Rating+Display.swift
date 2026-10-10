@@ -1,9 +1,7 @@
-import DesignSystem
 import Domain
-import SwiftUI
+import Foundation
 
 extension CheckResult.Rating {
-    /// 比較表やチェックリストに出す記号
     var symbol: String {
         switch self {
         case .good:
@@ -15,18 +13,6 @@ extension CheckResult.Rating {
         }
     }
 
-    var color: Color {
-        switch self {
-        case .good:
-            return .positive
-        case .neutral:
-            return .caution
-        case .bad:
-            return .negative
-        }
-    }
-
-    /// VoiceOverで読み上げる名前
     var accessibilityName: String {
         switch self {
         case .good:
