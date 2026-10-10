@@ -1,7 +1,7 @@
 import Foundation
 @testable import Domain
 
-// テストからは逐次呼ぶだけだが、記録はロックで守ってから @unchecked Sendable にする
+// ロックを省かないのは、@unchecked Sendable でコンパイラによる並行アクセスのチェックを外しているため
 final class PhotoLibraryScannerMock: PhotoLibraryScanner, @unchecked Sendable {
     private(set) var requestedStarts: [Date] = []
     private(set) var requestedEnds: [Date] = []

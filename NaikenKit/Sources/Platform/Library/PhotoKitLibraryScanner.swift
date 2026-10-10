@@ -3,7 +3,6 @@ import Domain
 import Foundation
 import Photos
 
-/// 写真ライブラリから撮影日時で写真を列挙する。読み取りには写真ライブラリの権限が要る
 public struct PhotoKitLibraryScanner: PhotoLibraryScanner {
     enum Failure: Error {
         case assetNotFound
@@ -35,7 +34,7 @@ public struct PhotoKitLibraryScanner: PhotoLibraryScanner {
         return candidates
     }
 
-    /// 写真の画像データを縮小してサムネイルにする。UIImage を経由しないので UIKit を使わない
+    /// PHImageManager から UIImage で受け取らないのは、Platform に UIKit を持ち込まないため
     public func thumbnailData(for id: String, maxPixelSize: Int) async -> Data? {
         guard let data = try? await imageData(for: id) else {
             return nil

@@ -149,7 +149,6 @@ final class AppContainer {
 
     // MARK: - Widget
 
-    /// 起動時とストアが変わるたびに、次の内見予定をウィジェットに渡す
     func keepUpcomingVisitsUpdated() async {
         let refresh = RefreshUpcomingVisitsUseCase(repository: repositories.properties, publisher: upcomingVisitPublisher)
         try? await refresh.execute()

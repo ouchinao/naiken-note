@@ -2,7 +2,6 @@ import Domain
 import Foundation
 import WidgetKit
 
-/// アプリ本体が App Group の UserDefaults に書いた内見予定を読む。SwiftDataのストアは開かない
 struct UpcomingVisitProvider: TimelineProvider {
     func placeholder(in _: Context) -> UpcomingVisitEntry {
         return UpcomingVisitEntry.placeholder
@@ -20,7 +19,7 @@ struct UpcomingVisitProvider: TimelineProvider {
         let now = Date()
         let visits = upcomingVisits(after: now)
         let entry = UpcomingVisitEntry(date: now, visits: visits)
-        // 次の内見の時刻を過ぎたら、その次の予定に切り替える
+        // 決まった間隔で読み直さないのは、表示が変わるのは次の内見の時刻を過ぎたときだけで、更新できる回数にも上限があるため
         let policy: TimelineReloadPolicy = visits.first.map { .after($0.visitAt) } ?? .never
         completion(Timeline(entries: [entry], policy: policy))
     }

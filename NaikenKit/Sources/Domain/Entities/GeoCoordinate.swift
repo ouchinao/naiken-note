@@ -11,7 +11,7 @@ public struct GeoCoordinate: Hashable, Sendable {
         self.longitude = longitude
     }
 
-    /// 2点間の大円距離(メートル)
+    /// CLLocation の distance(from:) を使わないのは、Domain に CoreLocation を持ち込まないため
     func distance(to other: GeoCoordinate) -> Double {
         let fromLatitude = latitude * .pi / 180
         let toLatitude = other.latitude * .pi / 180

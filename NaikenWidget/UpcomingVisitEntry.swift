@@ -4,7 +4,6 @@ import WidgetKit
 
 struct UpcomingVisitEntry: TimelineEntry {
     let date: Date
-    /// 内見日時の近い順
     let visits: [UpcomingVisit]
 
     static var placeholder: UpcomingVisitEntry {

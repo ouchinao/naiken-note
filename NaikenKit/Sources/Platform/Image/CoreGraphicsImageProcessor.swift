@@ -36,7 +36,7 @@ public struct CoreGraphicsImageProcessor: ImageProcessor {
 
     // MARK: - Internal
 
-    /// 長辺を `maxPixelSize` 以下にしたJPEGを作る。写真ライブラリのサムネイルにも使う
+    /// private にしないのは、写真ライブラリのサムネイルにも使うため
     static func resizedJPEG(from data: Data, maxPixelSize: Int) throws -> Data {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             throw Failure.unreadableImage

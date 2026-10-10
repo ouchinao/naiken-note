@@ -2,7 +2,6 @@ import Domain
 import Foundation
 import Observation
 
-/// 内見日時と位置情報から写真ライブラリの写真を探し、選んだものを物件に取り込む
 @MainActor
 @Observable
 public final class LibraryImportViewModel {

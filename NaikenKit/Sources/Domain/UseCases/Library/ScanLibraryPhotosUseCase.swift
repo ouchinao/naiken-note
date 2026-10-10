@@ -1,6 +1,5 @@
 import Foundation
 
-/// 内見日時と位置情報から、写真ライブラリの中の内見の写真を探す
 public struct ScanLibraryPhotosUseCase: Sendable {
     public enum Failure: Error, Equatable {
         case notAuthorized
