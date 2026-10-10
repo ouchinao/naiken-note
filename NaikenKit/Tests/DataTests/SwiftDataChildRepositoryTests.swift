@@ -1,0 +1,43 @@
+import Domain
+import Foundation
+import SwiftData
+import Testing
+@testable import Data
+
+/// 採寸メモとチェック結果のRepository
+struct SwiftDataChildRepositoryTests {
+    private let container: ModelContainer
+    private let property = Property(id: UUID(), name: "子レコードの物件", visitedAt: Date(), createdAt: Date())
+
+    init() throws {
+        container = try ModelContainerFactory.make(inMemory: true)
+    }
+
+    @Test("同じ項目のチェック結果は上書きし、1件だけ残す")
+    func checkResultIsUpsertedByItemKey() async throws {
+        let propertyRepository = SwiftDataPropertyRepository(modelContainer: container)
+        let repository = SwiftDataCheckResultRepository(modelContainer: container)
+        try await propertyRepository.save(property)
+        try await repository.save(CheckResult(id: UUID(), itemKey: "noise", rating: .bad), propertyID: property.id)
+
+        try await repository.save(CheckResult(id: UUID(), itemKey: "noise", rating: .good), propertyID: property.id)
+
+        let results = try await propertyRepository.fetch(id: property.id)?.checkResults ?? []
+        #expect(results.map(\.rating) == [.good])
+    }
+
+    @Test("採寸メモを保存し直すと上書きする")
+    func measurementIsUpdatedInPlace() async throws {
+        let propertyRepository = SwiftDataPropertyRepository(modelContainer: container)
+        let repository = SwiftDataMeasurementRepository(modelContainer: container)
+        try await propertyRepository.save(property)
+        var measurement = Measurement(id: UUID(), label: "窓の幅", valueMillimeters: 1_690, createdAt: Date())
+        try await repository.save(measurement, propertyID: property.id)
+        measurement.valueMillimeters = 1_700
+
+        try await repository.save(measurement, propertyID: property.id)
+
+        let measurements = try await propertyRepository.fetch(id: property.id)?.measurements ?? []
+        #expect(measurements.map(\.valueMillimeters) == [1_700])
+    }
+}
