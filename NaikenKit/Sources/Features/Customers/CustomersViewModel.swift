@@ -5,7 +5,7 @@ import Observation
 @MainActor
 @Observable
 public final class CustomersViewModel {
-    enum Notice {
+    enum Notice: Equatable {
         case proRequired
         case emptyName
         case failed(message: String)

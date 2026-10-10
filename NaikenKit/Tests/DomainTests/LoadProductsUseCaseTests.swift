@@ -4,7 +4,7 @@ import Testing
 
 struct LoadProductsUseCaseTests {
     @Test("買い切り、サブスクの順に並べ、知らない商品は除く")
-    func returnsProductsOnSale() async throws {
+    func ordersUnlockBeforeSubscriptionAndDropsUnknown() async throws {
         let products = [
             PurchasableProduct(id: ProductID.proMonthly, displayName: "Pro", displayPrice: "¥980"),
             PurchasableProduct(id: "com.example.unknown", displayName: "?", displayPrice: "¥0"),
