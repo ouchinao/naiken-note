@@ -6,6 +6,7 @@
 - 対象: iOS 17以上、iPhone専用
 - 言語: Swift 6(Strict Concurrency)、SwiftUI + Observation、SwiftData + CloudKit、StoreKit 2
 - 外部ライブラリ: なし(SwiftLintのビルドプラグインのみ)
+- 設計書: [docs/design.md](docs/design.md)
 
 ## 構成
 
