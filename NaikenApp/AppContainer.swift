@@ -16,6 +16,7 @@ final class AppContainer {
     private let purchaseService: any PurchaseService
     private let imageProcessor: any ImageProcessor = CoreGraphicsImageProcessor()
     private let libraryScanner: any PhotoLibraryScanner = PhotoKitLibraryScanner()
+    private let upcomingVisitPublisher: any UpcomingVisitPublishing = WidgetUpcomingVisitPublisher()
     private let cloudAccountStatus: any CloudAccountStatusProviding = UbiquityCloudAccountStatusProvider()
 
     init() throws {
@@ -144,6 +145,17 @@ final class AppContainer {
                 onFinish: onFinish
             )
             return AnyView(view)
+        }
+    }
+
+    // MARK: - Widget
+
+    /// 起動時とストアが変わるたびに、次の内見予定をウィジェットに渡す
+    func keepUpcomingVisitsUpdated() async {
+        let refresh = RefreshUpcomingVisitsUseCase(repository: repositories.properties, publisher: upcomingVisitPublisher)
+        try? await refresh.execute()
+        for await _ in storeChanges.changes {
+            try? await refresh.execute()
         }
     }
 

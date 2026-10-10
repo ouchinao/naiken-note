@@ -24,5 +24,6 @@ struct RootView: View {
         .fullScreenCover(item: $router.fullScreen) { screen in
             container.makeView(for: screen)
         }
+        .task { await container.keepUpcomingVisitsUpdated() }
     }
 }

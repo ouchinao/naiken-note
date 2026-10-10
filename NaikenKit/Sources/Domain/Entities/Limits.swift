@@ -8,4 +8,6 @@ public enum Limits {
     public static let comparisonMinimumCount = 2
     /// 比較表に並べられる物件の最大数。スマホの横幅で読める上限
     public static let comparisonMaximumCount = 4
+    /// ウィジェットに出す内見予定の数
+    public static let upcomingVisitCount = 3
 }
