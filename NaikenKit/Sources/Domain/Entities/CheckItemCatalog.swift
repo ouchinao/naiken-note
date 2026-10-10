@@ -27,7 +27,7 @@ public enum CheckItemCatalog {
         CheckItem(id: "neighborhood", title: String(localized: "周辺の店・街灯", bundle: .module), category: .common),
     ]
 
-    public static func item(forKey key: String) -> CheckItem? {
+    static func item(forKey key: String) -> CheckItem? {
         return all.first { $0.id == key }
     }
 

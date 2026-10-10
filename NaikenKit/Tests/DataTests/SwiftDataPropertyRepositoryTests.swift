@@ -33,17 +33,31 @@ struct SwiftDataPropertyRepositoryTests {
         #expect(fetched == property)
     }
 
-    @Test("一覧は内見日の新しい順に返す")
-    func fetchAllSortsByVisitDateDescending() async throws {
+    @Test("保存した物件はすべて一覧に含める")
+    func fetchAllReturnsEverySavedProperty() async throws {
         let repository = SwiftDataPropertyRepository(modelContainer: container)
-        let older = Property(id: UUID(), name: "古い", visitedAt: Date(timeIntervalSince1970: 1_700_000_000), createdAt: Date())
-        let newer = Property(id: UUID(), name: "新しい", visitedAt: Date(timeIntervalSince1970: 1_800_000_000), createdAt: Date())
-        try await repository.save(older)
-        try await repository.save(newer)
+        let first = Property(id: UUID(), name: "A棟201", visitedAt: Date(), createdAt: Date())
+        let second = Property(id: UUID(), name: "B棟101", visitedAt: Date(), createdAt: Date())
+        try await repository.save(first)
+        try await repository.save(second)
 
-        let properties = try await repository.fetchAll()
+        let ids = try await repository.fetchAll().map(\.id)
 
-        #expect(properties.map(\.name) == ["新しい", "古い"])
+        #expect(Set(ids) == [first.id, second.id])
+    }
+
+    @Test("指定した日時より後に内見する物件だけを読み出せる")
+    func fetchesPropertiesVisitedAfterDate() async throws {
+        let repository = SwiftDataPropertyRepository(modelContainer: container)
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let past = Property(id: UUID(), name: "済み", visitedAt: now.addingTimeInterval(-60), createdAt: now)
+        let upcoming = Property(id: UUID(), name: "これから", visitedAt: now.addingTimeInterval(60), createdAt: now)
+        try await repository.save(past)
+        try await repository.save(upcoming)
+
+        let properties = try await repository.fetchAll(visitedAfter: now)
+
+        #expect(properties.map(\.name) == ["これから"])
     }
 
     @Test("同じ物件を保存し直すと上書きし、件数は増えない")

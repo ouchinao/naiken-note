@@ -5,9 +5,11 @@ import SwiftData
 @ModelActor
 actor SwiftDataPropertyRepository: PropertyRepository {
     func fetchAll() throws -> [Property] {
-        let descriptor = FetchDescriptor<PropertyRecord>(
-            sortBy: [SortDescriptor(\.visitedAt, order: .reverse)]
-        )
+        return try modelContext.fetch(FetchDescriptor<PropertyRecord>()).map(Property.init(record:))
+    }
+
+    func fetchAll(visitedAfter date: Date) throws -> [Property] {
+        let descriptor = FetchDescriptor<PropertyRecord>(predicate: #Predicate { $0.visitedAt > date })
         return try modelContext.fetch(descriptor).map(Property.init(record:))
     }
 
@@ -28,8 +30,7 @@ actor SwiftDataPropertyRepository: PropertyRepository {
         modelContext.insert(record)
         record.apply(property)
         record.customer = try property.customerID.flatMap(modelContext.customerRecord(id:))
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 
     func delete(id: UUID) throws {
@@ -37,7 +38,6 @@ actor SwiftDataPropertyRepository: PropertyRepository {
             return
         }
         modelContext.delete(record)
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 }

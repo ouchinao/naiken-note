@@ -41,9 +41,9 @@ public struct Property: Identifiable, Hashable, Sendable {
         self.walkMinutes = walkMinutes
         self.visitedAt = visitedAt
         self.memo = memo
-        self.photos = photos
-        self.measurements = measurements
-        self.checkResults = checkResults
+        self.photos = photos.sorted(by: Photo.displayOrder)
+        self.measurements = measurements.sorted(by: Measurement.displayOrder)
+        self.checkResults = CheckResult.onePerItem(checkResults)
         self.customerID = customerID
         self.createdAt = createdAt
     }
@@ -51,7 +51,7 @@ public struct Property: Identifiable, Hashable, Sendable {
 
 extension Property {
     public var representativePhoto: Photo? {
-        return photos.min { $0.sortOrder < $1.sortOrder }
+        return photos.first
     }
 
     public var goodCount: Int {

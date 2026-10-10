@@ -12,7 +12,8 @@ public final class LibraryImportViewModel {
         case ready
     }
 
-    enum Notice {
+    enum Notice: Equatable {
+        case partiallyFailed(count: Int)
         case failed(message: String)
     }
 
@@ -22,6 +23,7 @@ public final class LibraryImportViewModel {
     private(set) var candidates: [LibraryPhotoCandidate] = []
     private(set) var thumbnails: [String: Data] = [:]
     private(set) var selectedIDs: Set<String> = []
+    private(set) var isAccessLimited = false
     private(set) var isImporting = false
     private(set) var didImport = false
     private(set) var notice: Notice?
@@ -67,7 +69,9 @@ public final class LibraryImportViewModel {
                 phase = .empty
                 return
             }
-            candidates = try await scanLibrary.execute(around: property.visitedAt)
+            let scan = try await scanLibrary.execute(around: property.visitedAt)
+            candidates = scan.candidates
+            isAccessLimited = scan.isAccessLimited
             selectedIDs = Set(candidates.map(\.id))
             phase = candidates.isEmpty ? .empty : .ready
             await loadThumbnails()
@@ -97,18 +101,25 @@ public final class LibraryImportViewModel {
             isImporting = false
         }
         let ids = candidates.map(\.id).filter { selectedIDs.contains($0) }
-        do {
-            _ = try await importLibrary.execute(candidateIDs: ids, propertyID: propertyID)
+        let result = await importLibrary.execute(candidateIDs: ids, propertyID: propertyID)
+        if result.failedIDs.isEmpty {
             didImport = true
-        } catch {
-            notice = .failed(message: error.localizedDescription)
+            return
         }
+        // 取り込めた写真を候補に残さないのは、もう一度取り込んだときに同じ写真を二重に保存しないため
+        let imported = Set(result.importedIDs)
+        candidates.removeAll { imported.contains($0.id) }
+        selectedIDs.subtract(imported)
+        notice = .partiallyFailed(count: result.failedIDs.count)
     }
 
     // MARK: - Private
 
     private func loadThumbnails() async {
         for candidate in candidates {
+            if Task.isCancelled {
+                return
+            }
             if let data = await loadThumbnail.execute(candidateID: candidate.id) {
                 thumbnails[candidate.id] = data
             }

@@ -18,8 +18,8 @@ public final class PropertyListViewModel {
     private(set) var isLoading = false
     private(set) var hasLoaded = false
     private(set) var selectedIDs: [UUID] = []
-    var isSelecting = false
-    var filter: CustomerFilter = .all
+    private(set) var isSelecting = false
+    private(set) var filter: CustomerFilter = .all
     private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
@@ -31,6 +31,10 @@ public final class PropertyListViewModel {
                 notice = nil
             }
         }
+    }
+
+    var canStartSelecting: Bool {
+        return properties.count >= Limits.comparisonMinimumCount
     }
 
     var canCompare: Bool {
@@ -61,19 +65,18 @@ public final class PropertyListViewModel {
 
     // MARK: - Actions
 
+    /// サムネイルを読み終えるまで読み込み中の表示を続けないのは、写真の多い物件があっても一覧をすぐに出すため
     func load() async {
         isLoading = true
-        defer {
-            isLoading = false
-            hasLoaded = true
-        }
         do {
             properties = try await fetchProperties.execute(filter: filter)
             customers = try await fetchCustomers.execute()
-            await loadThumbnails()
         } catch {
             notice = .failed(message: error.localizedDescription)
         }
+        isLoading = false
+        hasLoaded = true
+        await loadThumbnails()
     }
 
     func observeChanges() async {
@@ -93,6 +96,10 @@ public final class PropertyListViewModel {
             notice = .failed(message: error.localizedDescription)
         }
         return false
+    }
+
+    func startSelecting() {
+        isSelecting = true
     }
 
     func toggleSelection(of property: Property) {

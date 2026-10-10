@@ -10,6 +10,7 @@ public final class ARMeasureViewModel {
     private(set) var markers: [CGPoint] = []
     private(set) var distanceMillimeters: Int?
     private(set) var isSurfaceMissing = false
+    private(set) var failure: ARMeasurement.Failure?
 
     var isLiDARAvailable: Bool {
         return measuring.isLiDARAvailable
@@ -17,6 +18,13 @@ public final class ARMeasureViewModel {
 
     var placedPointCount: Int {
         return markers.count
+    }
+
+    var measuredLine: (start: CGPoint, end: CGPoint)? {
+        guard markers.count == ARMeasurement.pointCount else {
+            return nil
+        }
+        return (markers[0], markers[1])
     }
 
     // MARK: - Init
@@ -30,6 +38,9 @@ public final class ARMeasureViewModel {
     // MARK: - Actions
 
     func start() {
+        measuring.onFailure = { [weak self] failure in
+            self?.failure = failure
+        }
         measuring.start()
     }
 
@@ -41,6 +52,9 @@ public final class ARMeasureViewModel {
         if size.width <= 0 || size.height <= 0 {
             return
         }
+        if markers.count >= ARMeasurement.pointCount {
+            reset()
+        }
         let isPlaced = measuring.placePoint(
             normalizedX: point.x / size.width,
             normalizedY: point.y / size.height,
@@ -51,11 +65,7 @@ public final class ARMeasureViewModel {
         if !isPlaced {
             return
         }
-        if measuring.placedPointCount == 1 {
-            markers = [point]
-        } else {
-            markers.append(point)
-        }
+        markers.append(point)
         distanceMillimeters = measuring.distanceMillimeters
     }
 

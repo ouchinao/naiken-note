@@ -11,8 +11,7 @@ struct UpcomingVisitEntry: TimelineEntry {
             propertyID: UUID(),
             name: String(localized: "A棟201"),
             visitAt: Date().addingTimeInterval(60 * 60),
-            nearestStation: String(localized: "学芸大学"),
-            walkMinutes: 6
+            nearestStation: String(localized: "学芸大学")
         )
         return UpcomingVisitEntry(date: Date(), visits: [visit])
     }

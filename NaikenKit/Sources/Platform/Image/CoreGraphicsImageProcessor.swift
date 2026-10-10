@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 
 /// `UIImage` に読み込んでから縮小しないのは、元画像をメモリに全展開してしまうため
 public struct CoreGraphicsImageProcessor: ImageProcessor {
-    enum Failure: Error {
+    private enum Failure: Error {
         case unreadableImage
         case encodingFailed
     }
@@ -25,6 +25,10 @@ public struct CoreGraphicsImageProcessor: ImageProcessor {
               let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
             return nil
         }
+        return Self.captureDate(from: properties)
+    }
+
+    static func captureDate(from properties: [CFString: Any]) -> Date? {
         let exif = properties[kCGImagePropertyExifDictionary] as? [CFString: Any]
         let tiff = properties[kCGImagePropertyTIFFDictionary] as? [CFString: Any]
         guard let text = exif?[kCGImagePropertyExifDateTimeOriginal] as? String ?? tiff?[kCGImagePropertyTIFFDateTime] as? String else {
@@ -33,8 +37,6 @@ public struct CoreGraphicsImageProcessor: ImageProcessor {
         let offset = exif?[kCGImagePropertyExifOffsetTimeOriginal] as? String
         return ExifDateParser.date(from: text, offset: offset)
     }
-
-    // MARK: - Internal
 
     /// private にしないのは、写真ライブラリのサムネイルにも使うため
     static func resizedJPEG(from data: Data, maxPixelSize: Int) throws -> Data {

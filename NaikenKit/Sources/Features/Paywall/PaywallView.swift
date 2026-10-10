@@ -5,7 +5,6 @@ import SwiftUI
 public struct PaywallView: View {
     @State private var viewModel: PaywallViewModel
     @Environment(Router.self) private var router
-    @Environment(EntitlementStore.self) private var entitlementStore
 
     public init(viewModel: PaywallViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -15,12 +14,13 @@ public struct PaywallView: View {
         NavigationStack {
             ScrollView {
                 VStack(alignment: .leading, spacing: Spacing.xLarge) {
-                    PlanStatusView(entitlement: entitlementStore.current)
+                    PlanStatusView(entitlement: viewModel.entitlement)
                     PlanFeaturesView()
                     productButtons
                     Button("購入を復元") {
                         Task { await viewModel.restore() }
                     }
+                    .disabled(viewModel.isRestoring)
                     .frame(maxWidth: .infinity)
                     SubscriptionTermsView()
                 }
@@ -61,6 +61,16 @@ public struct PaywallView: View {
         if viewModel.isLoading && viewModel.products.isEmpty {
             ProgressView()
                 .frame(maxWidth: .infinity)
+        } else if viewModel.canRetryLoading {
+            VStack(spacing: Spacing.small) {
+                Text("商品を読み込めませんでした。通信できる場所でもう一度お試しください")
+                    .font(.footnote)
+                    .foregroundStyle(.secondary)
+                Button("再読み込み") {
+                    Task { await viewModel.load() }
+                }
+            }
+            .frame(maxWidth: .infinity)
         } else {
             VStack(spacing: Spacing.medium) {
                 ForEach(viewModel.products) { product in
@@ -70,7 +80,7 @@ public struct PaywallView: View {
                         Text(title(of: product))
                     }
                     .buttonStyle(.primary)
-                    .disabled(viewModel.isPurchasing || isOwned(product))
+                    .disabled(!viewModel.canPurchase(product))
                 }
             }
         }

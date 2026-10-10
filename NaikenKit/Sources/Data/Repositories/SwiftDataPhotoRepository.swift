@@ -14,8 +14,7 @@ actor SwiftDataPhotoRepository: PhotoRepository {
         record.imageData = imageData
         record.thumbnailData = thumbnailData
         record.property = property
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 
     func update(_ photo: Photo) throws {
@@ -23,8 +22,7 @@ actor SwiftDataPhotoRepository: PhotoRepository {
             return
         }
         record.apply(photo)
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 
     func delete(id: UUID) throws {
@@ -32,15 +30,14 @@ actor SwiftDataPhotoRepository: PhotoRepository {
             return
         }
         modelContext.delete(record)
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 
     func photos(propertyID: UUID) throws -> [Photo] {
         guard let property = try modelContext.propertyRecord(id: propertyID) else {
             return []
         }
-        return (property.photos ?? []).map(Photo.init(record:)).sorted { $0.sortOrder < $1.sortOrder }
+        return (property.photos ?? []).map(Photo.init(record:))
     }
 
     func imageData(id: UUID) throws -> Data? {

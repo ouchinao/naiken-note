@@ -36,13 +36,28 @@ struct BuildComparisonUseCaseTests {
         let front = Photo.fixture(sortOrder: 0)
         let image = Data("front".utf8)
         let property = Property.fixture(photos: [later, front])
+        let other = Property.fixture()
         let useCase = BuildComparisonUseCase(
-            propertyRepository: PropertyRepositoryMock(properties: [property, Property.fixture()]),
+            propertyRepository: PropertyRepositoryMock(properties: [property, other]),
             photoRepository: PhotoRepositoryMock(images: [front.id: image])
         )
 
-        let entries = try await useCase.execute(propertyIDs: [property.id, UUID()])
+        let entries = try await useCase.execute(propertyIDs: [property.id, other.id])
 
         #expect(entries.first?.representativeImage == image)
+    }
+
+    @Test("別の端末で削除されて見つからない物件は、列に入れずに飛ばす")
+    func skipsMissingProperty() async throws {
+        let first = Property.fixture(name: "A")
+        let second = Property.fixture(name: "B")
+        let useCase = BuildComparisonUseCase(
+            propertyRepository: PropertyRepositoryMock(properties: [first, second]),
+            photoRepository: PhotoRepositoryMock()
+        )
+
+        let entries = try await useCase.execute(propertyIDs: [first.id, UUID(), second.id])
+
+        #expect(entries.map(\.id) == [first.id, second.id])
     }
 }

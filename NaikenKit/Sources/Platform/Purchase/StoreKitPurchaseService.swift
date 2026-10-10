@@ -4,21 +4,26 @@ import StoreKit
 
 /// StoreKit の `Product` や `Transaction` を返さないのは、StoreKit の型を Domain に持ち込まないため
 public final class StoreKitPurchaseService: PurchaseService {
-    enum Failure: Error {
+    private enum Failure: Error {
         case productNotFound(String)
     }
 
     public init() {}
 
+    /// `Transaction.updates` だけを流さないのは、サブスクが期限で切れても新しいトランザクションは届かず、アプリを開き直すまで Pro のままになるため
     public var updates: AsyncStream<Set<String>> {
         return AsyncStream { continuation in
             let task = Task {
+                var expiryWatch = Self.watchExpiration(continuation)
                 for await result in Transaction.updates {
-                    if let transaction = try? verified(result) {
+                    if let transaction = try? Self.verified(result) {
                         await transaction.finish()
                     }
-                    continuation.yield(await currentEntitlements())
+                    continuation.yield(await Self.activeProductIDs())
+                    expiryWatch.cancel()
+                    expiryWatch = Self.watchExpiration(continuation)
                 }
+                expiryWatch.cancel()
             }
             continuation.onTermination = { _ in
                 task.cancel()
@@ -39,7 +44,7 @@ public final class StoreKitPurchaseService: PurchaseService {
         let result = try await product.purchase()
         switch result {
         case .success(let verification):
-            let transaction = try verified(verification)
+            let transaction = try Self.verified(verification)
             await transaction.finish()
             return .purchased
         case .pending:
@@ -52,6 +57,16 @@ public final class StoreKitPurchaseService: PurchaseService {
     }
 
     public func currentEntitlements() async -> Set<String> {
+        return await Self.activeProductIDs()
+    }
+
+    public func restore() async throws {
+        try await AppStore.sync()
+    }
+
+    // MARK: - Private
+
+    private static func activeProductIDs() async -> Set<String> {
         var ids: Set<String> = []
         for await result in Transaction.currentEntitlements {
             if let transaction = try? verified(result) {
@@ -61,13 +76,30 @@ public final class StoreKitPurchaseService: PurchaseService {
         return ids
     }
 
-    public func restore() async throws {
-        try await AppStore.sync()
+    private static func nextExpiration() async -> Date? {
+        var dates: [Date] = []
+        for await result in Transaction.currentEntitlements {
+            if let date = (try? verified(result))?.expirationDate, date > Date() {
+                dates.append(date)
+            }
+        }
+        return dates.min()
     }
 
-    // MARK: - Private
+    private static func watchExpiration(_ continuation: AsyncStream<Set<String>>.Continuation) -> Task<Void, Never> {
+        return Task {
+            while let expiration = await nextExpiration() {
+                do {
+                    try await Task.sleep(for: .seconds(expiration.timeIntervalSinceNow))
+                } catch {
+                    return
+                }
+                continuation.yield(await activeProductIDs())
+            }
+        }
+    }
 
-    private func verified<T>(_ result: VerificationResult<T>) throws -> T {
+    private static func verified<T>(_ result: VerificationResult<T>) throws -> T {
         switch result {
         case .verified(let value):
             return value

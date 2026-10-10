@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import ImageIO
 import Testing
 @testable import Platform
 
@@ -15,8 +16,8 @@ struct CoreGraphicsImageProcessorTests {
         #expect(try JPEGFixture.pixelSize(of: data) == CGSize(width: 2_048, height: 1_536))
     }
 
-    @Test("サムネイルは長辺320pxにする")
-    func makesThumbnailAt320() async throws {
+    @Test("サムネイルは指定した長辺に縮めて作る")
+    func makesThumbnailAtRequestedSize() async throws {
         let original = try JPEGFixture.make(width: 4_032, height: 3_024)
 
         let data = try await processor.thumbnail(original, maxPixelSize: 320)
@@ -43,17 +44,36 @@ struct CoreGraphicsImageProcessorTests {
     @Test("時差のない撮影日時は端末のタイムゾーンの時刻として読む")
     func readsExifDateWithoutOffsetInCurrentTimeZone() throws {
         let original = try JPEGFixture.make(width: 64, height: 64, dateTimeOriginal: "2026:10:01 14:30:00")
-        let expected = DateComponents(
-            calendar: Calendar(identifier: .gregorian),
-            timeZone: .current,
-            year: 2026,
-            month: 10,
-            day: 1,
-            hour: 14,
-            minute: 30
-        ).date
 
-        #expect(processor.captureDate(of: original) == expected)
+        #expect(processor.captureDate(of: original) == localDate(year: 2026, month: 10, day: 1, hour: 14, minute: 30))
+    }
+
+    @Test("縦向きに撮った写真は、向きを反映した縦長の画像にする")
+    func appliesExifOrientation() async throws {
+        let original = try JPEGFixture.make(width: 400, height: 300, orientation: .right)
+
+        let data = try await processor.downsized(original, maxPixelSize: 2_048)
+
+        #expect(try JPEGFixture.pixelSize(of: data) == CGSize(width: 300, height: 400))
+    }
+
+    @Test("EXIFに撮影日時がなければ、TIFFの日時を端末のタイムゾーンの時刻として読む")
+    func fallsBackToTiffDateTime() {
+        let properties: [CFString: Any] = [
+            kCGImagePropertyExifDictionary: [CFString: Any](),
+            kCGImagePropertyTIFFDictionary: [kCGImagePropertyTIFFDateTime: "2026:10:01 14:30:00"],
+        ]
+
+        let date = CoreGraphicsImageProcessor.captureDate(from: properties)
+
+        #expect(date == localDate(year: 2026, month: 10, day: 1, hour: 14, minute: 30))
+    }
+
+    @Test("時差の書き方が読めなくても、撮影日時は端末のタイムゾーンの時刻として読む")
+    func ignoresUnreadableOffset() throws {
+        let original = try JPEGFixture.make(width: 64, height: 64, dateTimeOriginal: "2026:10:01 14:30:00", offset: "JST")
+
+        #expect(processor.captureDate(of: original) == localDate(year: 2026, month: 10, day: 1, hour: 14, minute: 30))
     }
 
     @Test("EXIFに撮影日時がなければnil")
@@ -61,5 +81,19 @@ struct CoreGraphicsImageProcessorTests {
         let original = try JPEGFixture.make(width: 64, height: 64)
 
         #expect(processor.captureDate(of: original) == nil)
+    }
+
+    // MARK: - Private
+
+    private func localDate(year: Int, month: Int, day: Int, hour: Int, minute: Int) -> Date? {
+        return DateComponents(
+            calendar: Calendar(identifier: .gregorian),
+            timeZone: .current,
+            year: year,
+            month: month,
+            day: day,
+            hour: hour,
+            minute: minute
+        ).date
     }
 }

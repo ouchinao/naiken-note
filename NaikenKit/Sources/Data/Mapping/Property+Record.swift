@@ -13,8 +13,8 @@ extension Property {
             walkMinutes: record.walkMinutes,
             visitedAt: record.visitedAt,
             memo: record.memo,
-            photos: (record.photos ?? []).map(Photo.init(record:)).sorted { $0.sortOrder < $1.sortOrder },
-            measurements: (record.measurements ?? []).map(Measurement.init(record:)).sorted { $0.createdAt < $1.createdAt },
+            photos: (record.photos ?? []).map(Photo.init(record:)),
+            measurements: (record.measurements ?? []).map(Measurement.init(record:)),
             checkResults: (record.checkResults ?? []).map(CheckResult.init(record:)),
             customerID: record.customer?.id,
             createdAt: record.createdAt

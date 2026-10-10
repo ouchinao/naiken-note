@@ -50,13 +50,15 @@ jobs:
           fi
           "$swiftlint" version
           "$swiftlint" lint --strict
-          # import の制限が効いていることを確かめる。Features から Data を import したらエラーにならなければいけない
+          # import の制限が効いていることを確かめる。Features から Data を import したら、書き方によらずエラーにならなければいけない
           probe=NaikenKit/Sources/Features/ImportRuleProbe.swift
-          echo "import Data" > "$probe"
-          if "$swiftlint" lint --strict --quiet "$probe"; then
-            echo "Features から Data を import してもエラーになりません。.swiftlint.yml の custom_rules を確かめてください"
-            exit 1
-          fi
+          for statement in "import Data" "internal import Data" "    import Data" "@preconcurrency import Data"; do
+            echo "$statement" > "$probe"
+            if "$swiftlint" lint --strict --quiet "$probe"; then
+              echo "Features で「$statement」と書いてもエラーになりません。.swiftlint.yml の custom_rules を確かめてください"
+              exit 1
+            fi
+          done
           rm "$probe"
 
       - name: Pick an iPhone simulator

@@ -11,7 +11,13 @@ enum JPEGFixture {
         case unreadable
     }
 
-    static func make(width: Int, height: Int, dateTimeOriginal: String? = nil, offset: String? = nil) throws -> Data {
+    static func make(
+        width: Int,
+        height: Int,
+        dateTimeOriginal: String? = nil,
+        offset: String? = nil,
+        orientation: CGImagePropertyOrientation? = nil
+    ) throws -> Data {
         let image = try solidImage(width: width, height: height)
         let output = NSMutableData()
         let type = UTType.jpeg.identifier as CFString
@@ -25,7 +31,10 @@ enum JPEGFixture {
         if let offset {
             exif[kCGImagePropertyExifOffsetTimeOriginal] = offset
         }
-        let properties: [CFString: Any] = [kCGImagePropertyExifDictionary: exif]
+        var properties: [CFString: Any] = [kCGImagePropertyExifDictionary: exif]
+        if let orientation {
+            properties[kCGImagePropertyOrientation] = orientation.rawValue
+        }
         CGImageDestinationAddImage(destination, image, properties as CFDictionary)
         if !CGImageDestinationFinalize(destination) {
             throw Failure.encodingFailed

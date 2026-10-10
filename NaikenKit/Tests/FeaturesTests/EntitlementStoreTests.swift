@@ -24,9 +24,21 @@ struct EntitlementStoreTests {
         #expect(store.current == .unlocked)
     }
 
-    @Test("購入済みの状態を読み込み直せる")
-    func refreshLoadsCurrentEntitlements() async {
+    @Test("起動直後でも、購入状態を読み終えてから上限や書き出しの判定に使う")
+    func currentEntitlementWaitsForInitialLoad() async {
         let store = EntitlementStore(purchaseService: PurchaseServiceStub(entitlements: [ProductID.unlock]))
+
+        let entitlement = await store.currentEntitlement()
+
+        #expect(entitlement == .unlocked)
+    }
+
+    @Test("アプリ内で購入したあと読み直すと、新しい購入状態になる")
+    func refreshPicksUpNewPurchase() async {
+        let service = PurchaseServiceStub()
+        let store = EntitlementStore(purchaseService: service)
+        _ = await store.currentEntitlement()
+        service.setEntitlements([ProductID.unlock])
 
         await store.refresh()
 

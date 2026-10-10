@@ -20,8 +20,7 @@ actor SwiftDataMeasurementRepository: MeasurementRepository {
             record.apply(measurement)
             record.property = property
         }
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 
     func delete(id: UUID) throws {
@@ -29,7 +28,6 @@ actor SwiftDataMeasurementRepository: MeasurementRepository {
             return
         }
         modelContext.delete(record)
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 }

@@ -8,6 +8,8 @@ import SwiftUI
 /// ViewModel や UseCase を各画面で作らないのは、Data と Platform の具象型を Features から見えなくするため
 @MainActor
 final class AppContainer {
+    // MARK: - Init
+
     let router = Router()
     let entitlementStore: EntitlementStore
 
@@ -17,17 +19,18 @@ final class AppContainer {
     private let imageProcessor: any ImageProcessor = CoreGraphicsImageProcessor()
     private let libraryScanner: any PhotoLibraryScanner = PhotoKitLibraryScanner()
     private let upcomingVisitPublisher: any UpcomingVisitPublishing = WidgetUpcomingVisitPublisher()
-    private let cloudAccountStatus: any CloudAccountStatusProviding = UbiquityCloudAccountStatusProvider()
+    private let cloudAccountStatus: any CloudAccountStatusProviding = CloudKitAccountStatusProvider(
+        containerID: SwiftDataRepositories.cloudKitContainerID
+    )
 
     init() throws {
-        let modelContainer = try ModelContainerFactory.make()
-        repositories = SwiftDataRepositories(modelContainer: modelContainer)
+        repositories = try SwiftDataRepositories.make()
         let purchaseService = StoreKitPurchaseService()
         self.purchaseService = purchaseService
         entitlementStore = EntitlementStore(purchaseService: purchaseService)
     }
 
-    // MARK: - View models
+    // MARK: - Actions
 
     func makePropertyListViewModel() -> PropertyListViewModel {
         return PropertyListViewModel(
@@ -122,7 +125,7 @@ final class AppContainer {
             loadProducts: LoadProductsUseCase(service: purchaseService),
             purchaseProduct: PurchaseProductUseCase(service: purchaseService),
             restorePurchases: restorePurchases,
-            entitlementStore: entitlementStore
+            entitlementState: entitlementStore
         )
     }
 
@@ -130,7 +133,7 @@ final class AppContainer {
         return SettingsViewModel(
             fetchCloudSyncStatus: FetchCloudSyncStatusUseCase(provider: cloudAccountStatus),
             restorePurchases: restorePurchases,
-            entitlementStore: entitlementStore
+            entitlementState: entitlementStore
         )
     }
 
@@ -158,14 +161,9 @@ final class AppContainer {
         }
     }
 
-    // MARK: - Widget
-
     func keepUpcomingVisitsUpdated() async {
         let refresh = RefreshUpcomingVisitsUseCase(repository: repositories.properties, publisher: upcomingVisitPublisher)
-        try? await refresh.execute()
-        for await _ in storeChanges.changes {
-            try? await refresh.execute()
-        }
+        await KeepUpcomingVisitsUpdatedUseCase(refresh: refresh, storeChanges: storeChanges).execute()
     }
 
     // MARK: - Private

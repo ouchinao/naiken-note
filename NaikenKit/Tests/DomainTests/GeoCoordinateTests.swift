@@ -4,7 +4,7 @@ import Testing
 
 struct GeoCoordinateTests {
     @Test("東京駅から新宿駅までは約6.1km")
-    func distanceBetweenStations() {
+    func tokyoToShinjukuIsAbout6Kilometers() {
         let tokyo = GeoCoordinate(latitude: 35.681_236, longitude: 139.767_125)
         let shinjuku = GeoCoordinate(latitude: 35.690_921, longitude: 139.700_258)
 
