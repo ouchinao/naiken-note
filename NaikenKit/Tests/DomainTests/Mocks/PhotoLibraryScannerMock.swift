@@ -28,7 +28,7 @@ final class PhotoLibraryScannerMock: PhotoLibraryScanner, @unchecked Sendable {
         return stubbedCandidates
     }
 
-    func thumbnailData(for id: String, maxPixelSize: Int) async -> Data? {
+    func thumbnailData(for _: String, maxPixelSize _: Int) async -> Data? {
         return nil
     }
 

@@ -5,7 +5,7 @@ import Photos
 
 /// 写真ライブラリから撮影日時で写真を列挙する。読み取りには写真ライブラリの権限が要る
 public struct PhotoKitLibraryScanner: PhotoLibraryScanner {
-    public enum Failure: Error {
+    enum Failure: Error {
         case assetNotFound
         case imageUnavailable
     }

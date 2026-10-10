@@ -6,5 +6,5 @@ public enum Limits {
     /// 5件以上にしないのは、スマホの横幅では表が読めなくなるため
     public static let comparisonMaximumCount = 4
     /// ウィジェットに出す内見予定の数
-    public static let upcomingVisitCount = 3
+    static let upcomingVisitCount = 3
 }

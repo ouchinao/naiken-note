@@ -20,7 +20,7 @@ public struct UpcomingVisit: Identifiable, Codable, Hashable, Sendable {
         self.walkMinutes = walkMinutes
     }
 
-    public init(property: Property) {
+    init(property: Property) {
         self.init(
             propertyID: property.id,
             name: property.name,

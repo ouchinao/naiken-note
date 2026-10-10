@@ -4,8 +4,8 @@ import Foundation
 public struct LibraryPhotoCandidate: Identifiable, Hashable, Sendable {
     /// 写真ライブラリ上の識別子
     public let id: String
-    public let takenAt: Date
-    public let coordinate: GeoCoordinate?
+    let takenAt: Date
+    let coordinate: GeoCoordinate?
 
     public init(id: String, takenAt: Date, coordinate: GeoCoordinate?) {
         self.id = id

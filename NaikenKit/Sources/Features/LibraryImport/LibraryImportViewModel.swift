@@ -25,7 +25,7 @@ public final class LibraryImportViewModel {
     private(set) var selectedIDs: Set<String> = []
     private(set) var isImporting = false
     private(set) var didImport = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

@@ -4,7 +4,7 @@ import WidgetKit
 
 /// アプリ本体が App Group の UserDefaults に書いた内見予定を読む。SwiftDataのストアは開かない
 struct UpcomingVisitProvider: TimelineProvider {
-    func placeholder(in context: Context) -> UpcomingVisitEntry {
+    func placeholder(in _: Context) -> UpcomingVisitEntry {
         return UpcomingVisitEntry.placeholder
     }
 
@@ -16,7 +16,7 @@ struct UpcomingVisitProvider: TimelineProvider {
         }
     }
 
-    func getTimeline(in context: Context, completion: @escaping (Timeline<UpcomingVisitEntry>) -> Void) {
+    func getTimeline(in _: Context, completion: @escaping (Timeline<UpcomingVisitEntry>) -> Void) {
         let now = Date()
         let visits = upcomingVisits(after: now)
         let entry = UpcomingVisitEntry(date: now, visits: visits)
