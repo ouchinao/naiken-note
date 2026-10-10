@@ -60,3 +60,9 @@ fastlane/report.xml
 fastlane/Preview.html
 fastlane/screenshots/**/*.png
 fastlane/test_output
+
+# CI が取得した Swift パッケージ
+.spm/
+
+# Python
+__pycache__/

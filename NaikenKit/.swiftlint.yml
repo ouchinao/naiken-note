@@ -1,0 +1,2 @@
+# Xcode の SwiftLint プラグインはパッケージ内の設定ファイルしか探さないので、リポジトリ直下の設定を引き継ぐ
+parent_config: ../.swiftlint.yml

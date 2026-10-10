@@ -1,0 +1,213 @@
+import DesignSystem
+import Domain
+import PhotosUI
+import SwiftUI
+
+struct PhotosTabView: View {
+    private static let cellMinimumWidth: CGFloat = 100
+
+    @Bindable private var viewModel: PhotosTabViewModel
+    private let property: Property
+    @Environment(Router.self) private var router
+    @State private var pickerItems: [PhotosPickerItem] = []
+    @State private var captionTarget: Photo?
+    @State private var captionText = ""
+
+    init(viewModel: PhotosTabViewModel, property: Property) {
+        self.viewModel = viewModel
+        self.property = property
+    }
+
+    var body: some View {
+        ScrollView {
+            VStack(alignment: .leading, spacing: Spacing.medium) {
+                actionButtons
+                tagFilter
+                photoGrid
+            }
+            .padding()
+        }
+        .overlay {
+            if viewModel.isImporting {
+                ProgressView("取り込み中…")
+                    .padding()
+                    .background(.regularMaterial, in: RoundedRectangle(cornerRadius: CornerRadius.medium))
+            }
+        }
+        .task(id: property.photos) { await viewModel.loadThumbnails(for: property.photos) }
+        .onChange(of: pickerItems) { _, items in
+            Task { await importPicked(items) }
+        }
+        .alert("キャプション", isPresented: isEditingCaption) {
+            TextField("キャプション", text: $captionText)
+            Button("保存") { saveCaption() }
+            Button("キャンセル", role: .cancel) {}
+        }
+        .alert("確認", isPresented: $viewModel.isNoticePresented, presenting: viewModel.notice) { _ in
+            Button("閉じる", role: .cancel) {}
+        } message: { notice in
+            switch notice {
+            case .unreadable(let count):
+                Text("\(count)枚の写真を読み込めませんでした。通信できる場所でもう一度お試しください")
+            case .failed(let message):
+                Text(message)
+            }
+        }
+    }
+
+    // MARK: - Private
+
+    private var actionButtons: some View {
+        HStack(spacing: Spacing.small) {
+            Button {
+                router.presentFullScreen(.camera(propertyID: property.id))
+            } label: {
+                Label("撮影", systemImage: "camera")
+            }
+            PhotosPicker(selection: $pickerItems, matching: .images) {
+                Label("選んで追加", systemImage: "photo.on.rectangle")
+            }
+        }
+        .buttonStyle(.bordered)
+        .font(.subheadline)
+    }
+
+    private var tagFilter: some View {
+        ScrollView(.horizontal, showsIndicators: false) {
+            HStack(spacing: Spacing.small) {
+                Button {
+                    viewModel.selectTag(nil)
+                } label: {
+                    TagChip(title: String(localized: "すべて", bundle: .module), isSelected: viewModel.selectedTag == nil)
+                }
+                ForEach(Photo.RoomTag.allCases, id: \.self) { tag in
+                    Button {
+                        viewModel.selectTag(tag)
+                    } label: {
+                        TagChip(title: tag.title, isSelected: viewModel.selectedTag == tag)
+                    }
+                }
+            }
+        }
+        .buttonStyle(.plain)
+    }
+
+    @ViewBuilder
+    private var photoGrid: some View {
+        let photos = viewModel.photos(of: property)
+        if photos.isEmpty {
+            ContentUnavailableView("写真がありません", systemImage: "photo", description: Text("撮影するか、写真ライブラリから追加しましょう"))
+        } else {
+            LazyVGrid(columns: [GridItem(.adaptive(minimum: Self.cellMinimumWidth), spacing: Spacing.small)], spacing: Spacing.small) {
+                ForEach(photos) { photo in
+                    Button {
+                        router.presentFullScreen(.photo(id: photo.id))
+                    } label: {
+                        PhotoCell(
+                            photo: photo,
+                            thumbnail: viewModel.thumbnails[photo.id],
+                            isRepresentative: photo == property.representativePhoto
+                        )
+                    }
+                    .buttonStyle(.plain)
+                    .contextMenu { contextMenu(for: photo) }
+                }
+            }
+        }
+    }
+
+    @ViewBuilder
+    private func contextMenu(for photo: Photo) -> some View {
+        Menu("部屋タグを変更") {
+            ForEach(Photo.RoomTag.allCases, id: \.self) { tag in
+                Button(tag.title) {
+                    Task { await viewModel.changeTag(of: photo, to: tag) }
+                }
+            }
+        }
+        Button("キャプションを編集") {
+            captionText = photo.caption
+            captionTarget = photo
+        }
+        Button("代表写真にする") {
+            Task { await viewModel.makeRepresentative(photo, in: property.id) }
+        }
+        Button("削除", role: .destructive) {
+            Task { await viewModel.delete(photo) }
+        }
+    }
+
+    private var isEditingCaption: Binding<Bool> {
+        return Binding {
+            return captionTarget != nil
+        } set: { isPresented in
+            if !isPresented {
+                captionTarget = nil
+            }
+        }
+    }
+
+    private func saveCaption() {
+        guard let captionTarget else {
+            return
+        }
+        let caption = captionText
+        Task { await viewModel.changeCaption(of: captionTarget, to: caption) }
+    }
+
+    /// PhotoKit で読まずに `PhotosPicker` の `Data` を使うのは、写真ライブラリの権限を求めずに済むため
+    private func importPicked(_ items: [PhotosPickerItem]) async {
+        if items.isEmpty {
+            return
+        }
+        viewModel.beginImport()
+        var images: [Data] = []
+        for item in items {
+            if let data = try? await item.loadTransferable(type: Data.self) {
+                images.append(data)
+            }
+        }
+        pickerItems = []
+        await viewModel.importPhotos(images, unreadableCount: items.count - images.count, into: property.id)
+    }
+}
+
+private struct PhotoCell: View {
+    let photo: Photo
+    let thumbnail: Data?
+    let isRepresentative: Bool
+
+    var body: some View {
+        ZStack(alignment: .topLeading) {
+            Color.clear
+                .aspectRatio(1, contentMode: .fit)
+                .overlay {
+                    ThumbnailView(data: thumbnail)
+                }
+                .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
+            HStack(spacing: Spacing.xSmall) {
+                if isRepresentative {
+                    Image(systemName: "star.fill")
+                        .foregroundStyle(.yellow)
+                }
+                TagChip(title: photo.roomTag.title)
+            }
+            .padding(Spacing.xSmall)
+        }
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityTitle)
+    }
+
+    // MARK: - Private
+
+    private var accessibilityTitle: String {
+        var parts = [photo.roomTag.title]
+        if !photo.caption.isEmpty {
+            parts.append(photo.caption)
+        }
+        if isRepresentative {
+            parts.append(String(localized: "代表写真", bundle: .module))
+        }
+        return parts.joined(separator: " ")
+    }
+}
