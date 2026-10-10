@@ -23,6 +23,15 @@ struct ComparisonViewModelTests {
         #expect(viewModel.exportedImage == Data([0x89]))
     }
 
+    @Test("比較できない件数で開くと failed を知らせ、isLoading を戻す")
+    func loadFailureShowsNotice() async {
+        let viewModel = makeViewModel(entitlement: .free)
+
+        await viewModel.load()
+
+        #expect(viewModel.entries.isEmpty && !viewModel.isLoading && viewModel.notice != nil)
+    }
+
     // MARK: - Private
 
     private func makeViewModel(entitlement: Entitlement) -> ComparisonViewModel {

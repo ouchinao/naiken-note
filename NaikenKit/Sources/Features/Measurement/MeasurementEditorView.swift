@@ -56,10 +56,11 @@ public struct MeasurementEditorView: View {
             }
             Section("寸法") {
                 HStack(spacing: Spacing.xSmall) {
-                    TextField("1690", text: $viewModel.valueText)
+                    TextField("寸法(mm)", text: $viewModel.valueText, prompt: Text("例: 1690"))
                         .keyboardType(.numberPad)
                     Text("mm")
                         .foregroundStyle(.secondary)
+                        .accessibilityHidden(true)
                 }
             }
             Section("メモ") {

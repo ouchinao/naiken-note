@@ -15,6 +15,7 @@ struct PropertyRow: View {
                 Image(systemName: isSelected ? "checkmark.circle.fill" : "circle")
                     .font(.title3)
                     .foregroundStyle(isSelected ? Color.brand : Color.secondary)
+                    .accessibilityHidden(true)
             }
             ThumbnailView(data: thumbnail, size: Self.thumbnailSize)
             VStack(alignment: .leading, spacing: Spacing.xSmall) {
@@ -31,7 +32,10 @@ struct PropertyRow: View {
         }
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
+        .accessibilityAddTraits(isSelected == true ? .isSelected : [])
     }
+
+    // MARK: - Private
 
     private var summary: String {
         return [
