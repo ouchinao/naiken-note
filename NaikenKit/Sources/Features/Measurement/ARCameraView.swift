@@ -6,7 +6,7 @@ import SwiftUI
 struct ARCameraView: UIViewRepresentable {
     let session: ARSession
 
-    func makeUIView(context: Context) -> ARSCNView {
+    func makeUIView(context _: Context) -> ARSCNView {
         let view = ARSCNView(frame: .zero)
         view.session = session
         view.automaticallyUpdatesLighting = true
@@ -14,5 +14,5 @@ struct ARCameraView: UIViewRepresentable {
         return view
     }
 
-    func updateUIView(_ uiView: ARSCNView, context: Context) {}
+    func updateUIView(_: ARSCNView, context _: Context) {}
 }

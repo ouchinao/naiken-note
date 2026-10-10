@@ -25,7 +25,7 @@ final class ARMeasuringStub: ARMeasuring {
 
     func pause() {}
 
-    func placePoint(normalizedX: Double, normalizedY: Double, viewportWidth: Double, viewportHeight: Double) -> Bool {
+    func placePoint(normalizedX: Double, normalizedY: Double, viewportWidth _: Double, viewportHeight _: Double) -> Bool {
         if !isSurfaceFound {
             return false
         }
