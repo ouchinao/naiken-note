@@ -16,7 +16,7 @@ public final class CustomersViewModel {
 
     private(set) var customers: [Customer] = []
     private(set) var hasLoaded = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

@@ -7,7 +7,7 @@ struct CustomerRepositoryStub: CustomerRepository {
         return []
     }
 
-    func save(_ customer: Customer) async throws {}
+    func save(_: Customer) async throws {}
 
-    func delete(id: UUID) async throws {}
+    func delete(id _: UUID) async throws {}
 }

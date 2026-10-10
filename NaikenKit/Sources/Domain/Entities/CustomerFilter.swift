@@ -6,7 +6,7 @@ public enum CustomerFilter: Hashable, Sendable {
     case customer(UUID)
     case unassigned
 
-    public func includes(_ property: Property) -> Bool {
+    func includes(_ property: Property) -> Bool {
         switch self {
         case .all:
             return true

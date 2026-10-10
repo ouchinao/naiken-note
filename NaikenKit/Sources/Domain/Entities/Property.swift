@@ -13,7 +13,7 @@ public struct Property: Identifiable, Hashable, Sendable {
     public let photos: [Photo]
     public let measurements: [Measurement]
     public let checkResults: [CheckResult]
-    public var customerID: UUID?
+    public let customerID: UUID?
     public let createdAt: Date
 
     public init(

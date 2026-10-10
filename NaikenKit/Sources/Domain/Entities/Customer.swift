@@ -4,7 +4,7 @@ import Foundation
 public struct Customer: Identifiable, Hashable, Sendable {
     public let id: UUID
     public var name: String
-    public var memo: String
+    public let memo: String
     public let createdAt: Date
 
     public init(id: UUID, name: String, memo: String = "", createdAt: Date) {

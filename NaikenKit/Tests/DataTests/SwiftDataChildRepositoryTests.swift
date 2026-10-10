@@ -51,8 +51,13 @@ struct SwiftDataChildRepositoryTests {
         let customerRepository = SwiftDataCustomerRepository(modelContainer: container)
         let customer = Customer(id: UUID(), name: "山田様", createdAt: Date())
         try await customerRepository.save(customer)
-        var assigned = property
-        assigned.customerID = customer.id
+        let assigned = Property(
+            id: property.id,
+            name: property.name,
+            visitedAt: property.visitedAt,
+            customerID: customer.id,
+            createdAt: property.createdAt
+        )
         try await propertyRepository.save(assigned)
 
         try await customerRepository.delete(id: customer.id)
