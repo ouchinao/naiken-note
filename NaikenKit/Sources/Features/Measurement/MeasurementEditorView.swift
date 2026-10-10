@@ -49,7 +49,7 @@ public struct MeasurementEditorView: View {
             Section("どこの寸法か") {
                 TextField("例: リビングの窓の幅", text: $viewModel.label)
                 Menu("定型から選ぶ") {
-                    ForEach(MeasurementLabelPreset.all, id: \.self) { preset in
+                    ForEach(Measurement.LabelPreset.all, id: \.self) { preset in
                         Button(preset) { viewModel.label = preset }
                     }
                 }

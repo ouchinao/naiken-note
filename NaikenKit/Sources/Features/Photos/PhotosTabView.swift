@@ -6,8 +6,8 @@ import SwiftUI
 struct PhotosTabView: View {
     private static let cellMinimumWidth: CGFloat = 100
 
-    @Bindable var viewModel: PhotosTabViewModel
-    let property: Property
+    @Bindable private var viewModel: PhotosTabViewModel
+    private let property: Property
     @Environment(Router.self) private var router
     @State private var pickerItems: [PhotosPickerItem] = []
     @State private var captionTarget: Photo?

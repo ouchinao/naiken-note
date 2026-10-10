@@ -15,7 +15,7 @@ public final class PropertyDetailViewModel {
     private(set) var isLoading = false
     private(set) var hasLoaded = false
     private(set) var isDeleted = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

@@ -15,7 +15,7 @@ struct PurchaseServiceStub: PurchaseService {
         return []
     }
 
-    func purchase(_ productID: String) async throws -> PurchaseOutcome {
+    func purchase(_: String) async throws -> PurchaseOutcome {
         return .purchased
     }
 

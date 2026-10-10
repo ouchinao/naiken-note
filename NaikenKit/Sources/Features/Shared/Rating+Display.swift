@@ -1,6 +1,5 @@
-import DesignSystem
 import Domain
-import SwiftUI
+import Foundation
 
 extension CheckResult.Rating {
     /// 比較表やチェックリストに出す記号
@@ -12,17 +11,6 @@ extension CheckResult.Rating {
             return "△"
         case .bad:
             return "×"
-        }
-    }
-
-    var color: Color {
-        switch self {
-        case .good:
-            return .positive
-        case .neutral:
-            return .caution
-        case .bad:
-            return .negative
         }
     }
 

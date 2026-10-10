@@ -4,7 +4,7 @@ import StoreKit
 
 /// StoreKitの `Product` や `Transaction` はこの型の外に出さず、Product ID の集合だけを返す
 public final class StoreKitPurchaseService: PurchaseService {
-    public enum Failure: Error {
+    enum Failure: Error {
         case productNotFound(String)
     }
 

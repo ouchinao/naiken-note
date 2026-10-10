@@ -23,7 +23,7 @@ public final class EntitlementStore: EntitlementProvider {
     }
 
     /// 購入や復元の直後に呼ぶ。`Transaction.updates` はアプリ内で完了した購入を流さないため
-    public func refresh() async {
+    func refresh() async {
         apply(await purchaseService.currentEntitlements())
     }
 

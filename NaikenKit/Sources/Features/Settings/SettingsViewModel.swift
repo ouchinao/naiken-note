@@ -14,7 +14,7 @@ public final class SettingsViewModel {
 
     private(set) var cloudStatus: CloudSyncStatus = .enabled
     private(set) var isRestoring = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

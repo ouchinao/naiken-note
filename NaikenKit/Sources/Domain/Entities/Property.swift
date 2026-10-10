@@ -2,17 +2,17 @@ import Foundation
 
 public struct Property: Identifiable, Hashable, Sendable {
     public let id: UUID
-    public var name: String
-    public var rent: Int?
-    public var layout: String
-    public var areaSquareMeters: Double?
-    public var nearestStation: String
-    public var walkMinutes: Int?
-    public var visitedAt: Date
-    public var memo: String
-    public var photos: [Photo]
-    public var measurements: [Measurement]
-    public var checkResults: [CheckResult]
+    public let name: String
+    public let rent: Int?
+    public let layout: String
+    public let areaSquareMeters: Double?
+    public let nearestStation: String
+    public let walkMinutes: Int?
+    public let visitedAt: Date
+    public let memo: String
+    public let photos: [Photo]
+    public let measurements: [Measurement]
+    public let checkResults: [CheckResult]
     public let createdAt: Date
 
     public init(

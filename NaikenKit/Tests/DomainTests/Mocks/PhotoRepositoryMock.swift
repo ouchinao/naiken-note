@@ -41,7 +41,7 @@ final class PhotoRepositoryMock: PhotoRepository, @unchecked Sendable {
         }
     }
 
-    func photos(propertyID: UUID) async throws -> [Photo] {
+    func photos(propertyID _: UUID) async throws -> [Photo] {
         return existingPhotos
     }
 

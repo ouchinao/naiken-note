@@ -4,7 +4,7 @@ import Foundation
 
 /// 端末内の保存と、CloudKitから届いた変更(`NSPersistentStoreRemoteChange`)をまとめて流す
 public final class StoreChangeObserver: StoreChangeObserving {
-    static let localChangeNotification = Notification.Name("NaikenNoteStoreDidChangeLocally")
+    private static let localChangeNotification = Notification.Name("NaikenNoteStoreDidChangeLocally")
 
     public init() {}
 

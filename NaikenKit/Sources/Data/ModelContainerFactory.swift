@@ -2,7 +2,7 @@ import Foundation
 import SwiftData
 
 public enum ModelContainerFactory {
-    static let cloudKitContainerID = "iCloud.com.example.naikennote"
+    private static let cloudKitContainerID = "iCloud.com.example.naikennote"
 
     /// `inMemory: true` はテストとSwiftUIプレビュー用。CloudKitを切り、ディスクにも書かない
     public static func make(inMemory: Bool = false) throws -> ModelContainer {

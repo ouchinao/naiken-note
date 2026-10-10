@@ -17,7 +17,7 @@ public final class ComparisonViewModel {
     private(set) var isExporting = false
     private(set) var exportedImage: Data?
     private(set) var hasShared = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

@@ -12,7 +12,7 @@ public final class CameraCaptureViewModel {
     // MARK: - State
 
     private(set) var savedCount = 0
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

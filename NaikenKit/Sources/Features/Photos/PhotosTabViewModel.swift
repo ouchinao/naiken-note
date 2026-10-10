@@ -15,7 +15,7 @@ public final class PhotosTabViewModel {
     private(set) var isImporting = false
     /// 部屋タグでの絞り込み。nilならすべて
     var selectedTag: Photo.RoomTag?
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

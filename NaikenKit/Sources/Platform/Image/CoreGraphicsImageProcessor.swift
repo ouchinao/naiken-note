@@ -5,7 +5,7 @@ import UniformTypeIdentifiers
 
 /// `CGImageSourceCreateThumbnailAtIndex` で縮小するので、元画像をメモリに全展開しない
 public struct CoreGraphicsImageProcessor: ImageProcessor {
-    public enum Failure: Error {
+    enum Failure: Error {
         case unreadableImage
         case encodingFailed
     }

@@ -8,7 +8,7 @@ final class MeasurementRepositoryMock: MeasurementRepository, @unchecked Sendabl
 
     private let lock = NSLock()
 
-    func save(_ measurement: Measurement, propertyID: UUID) async throws {
+    func save(_ measurement: Measurement, propertyID _: UUID) async throws {
         lock.withLock {
             saved.append(measurement)
         }

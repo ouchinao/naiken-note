@@ -32,5 +32,5 @@ final class PropertyRepositoryMock: PropertyRepository, @unchecked Sendable {
         }
     }
 
-    func delete(id: UUID) async throws {}
+    func delete(id _: UUID) async throws {}
 }

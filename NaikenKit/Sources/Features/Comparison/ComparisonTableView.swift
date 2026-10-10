@@ -3,7 +3,7 @@ import Domain
 import SwiftUI
 
 /// 比較表。画面表示と画像の書き出しで同じViewを使う。列が物件、行が項目
-public struct ComparisonTableView: View {
+struct ComparisonTableView: View {
     private static let labelWidth: CGFloat = 80
     private static let columnWidth: CGFloat = 150
     private static let photoHeight: CGFloat = 110
@@ -12,12 +12,12 @@ public struct ComparisonTableView: View {
     private let showsBranding: Bool
 
     /// `showsBranding` がtrueなら右下にアプリ名を入れる。書き出す画像だけに使う
-    public init(entries: [ComparisonEntry], showsBranding: Bool) {
+    init(entries: [ComparisonEntry], showsBranding: Bool) {
         self.entries = entries
         self.showsBranding = showsBranding
     }
 
-    public var body: some View {
+    var body: some View {
         VStack(alignment: .trailing, spacing: Spacing.small) {
             Grid(alignment: .leading, horizontalSpacing: Spacing.medium, verticalSpacing: Spacing.small) {
                 GridRow {
@@ -39,9 +39,9 @@ public struct ComparisonTableView: View {
                         }
                         .clipShape(RoundedRectangle(cornerRadius: CornerRadius.small))
                 }
-                row("家賃") { entry in Text(DisplayFormat.rent(entry.property.rent)) }
-                row("間取り") { entry in Text(DisplayFormat.layout(entry.property.layout)) }
-                row("面積") { entry in Text(DisplayFormat.area(entry.property.areaSquareMeters)) }
+                row("家賃") { Text(DisplayFormat.rent($0.property.rent)) }
+                row("間取り") { Text(DisplayFormat.layout($0.property.layout)) }
+                row("面積") { Text(DisplayFormat.area($0.property.areaSquareMeters)) }
                 row("駅徒歩") { entry in
                     Text(DisplayFormat.access(station: entry.property.nearestStation, walkMinutes: entry.property.walkMinutes))
                 }

@@ -21,9 +21,9 @@ public final class PropertyEditorViewModel {
     var walkMinutesText = ""
     var visitedAt = Date()
     var memo = ""
-    private(set) var isSaving = false
+    private var isSaving = false
     private(set) var didSave = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

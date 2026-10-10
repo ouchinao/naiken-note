@@ -2,7 +2,7 @@ import Foundation
 
 /// アプリ側で定義する定型チェック項目。キーは保存済みの `CheckResult.itemKey` と対応するので変更しない
 public enum CheckItemCatalog {
-    public static let all: [CheckItem] = [
+    public static let all = [
         CheckItem(id: "sunlight", title: String(localized: "日当たり", bundle: .module), category: .environment),
         CheckItem(id: "ventilation", title: String(localized: "風通し", bundle: .module), category: .environment),
         CheckItem(id: "noise", title: String(localized: "騒音", bundle: .module), category: .environment),

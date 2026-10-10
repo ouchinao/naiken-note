@@ -17,7 +17,7 @@ public enum Entitlement: Sendable {
         }
     }
 
-    public var propertyLimit: Int? {
+    var propertyLimit: Int? {
         switch self {
         case .free:
             return Limits.freePropertyCount
@@ -26,7 +26,7 @@ public enum Entitlement: Sendable {
         }
     }
 
-    public var canExportComparison: Bool {
+    var canExportComparison: Bool {
         return self != .free
     }
 }

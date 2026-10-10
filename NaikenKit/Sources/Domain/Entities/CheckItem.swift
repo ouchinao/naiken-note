@@ -30,7 +30,7 @@ public struct CheckItem: Identifiable, Hashable, Sendable {
     public let title: String
     public let category: Category
 
-    public init(id: String, title: String, category: Category) {
+    init(id: String, title: String, category: Category) {
         self.id = id
         self.title = title
         self.category = category

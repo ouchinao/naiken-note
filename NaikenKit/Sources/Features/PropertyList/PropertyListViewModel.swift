@@ -19,7 +19,7 @@ public final class PropertyListViewModel {
     /// 比較表に並べる物件。選んだ順に並ぶ
     private(set) var selectedIDs: [UUID] = []
     var isSelecting = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

@@ -15,9 +15,9 @@ public final class PaywallViewModel {
 
     private(set) var products: [PurchasableProduct] = []
     private(set) var isLoading = false
-    private(set) var purchasingID: String?
+    private var purchasingID: String?
     private(set) var didPurchase = false
-    var notice: Notice?
+    private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
         get {

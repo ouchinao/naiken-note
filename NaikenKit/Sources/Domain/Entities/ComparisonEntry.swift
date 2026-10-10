@@ -10,7 +10,7 @@ public struct ComparisonEntry: Identifiable, Hashable, Sendable {
         return property.id
     }
 
-    public init(property: Property, representativeImage: Data?) {
+    init(property: Property, representativeImage: Data?) {
         self.property = property
         self.representativeImage = representativeImage
     }

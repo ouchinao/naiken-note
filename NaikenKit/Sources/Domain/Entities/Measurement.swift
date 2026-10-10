@@ -2,10 +2,10 @@ import Foundation
 
 public struct Measurement: Identifiable, Hashable, Sendable {
     public let id: UUID
-    public var label: String
-    public var valueMillimeters: Int
-    public var note: String
-    public var photoID: UUID?
+    public let label: String
+    public let valueMillimeters: Int
+    public let note: String
+    public let photoID: UUID?
     public let createdAt: Date
 
     public init(

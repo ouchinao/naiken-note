@@ -48,23 +48,23 @@ public final class Router {
 
     public init() {}
 
-    public func push(_ route: Route) {
+    func push(_ route: Route) {
         path.append(route)
     }
 
-    public func pop() {
+    func pop() {
         _ = path.popLast()
     }
 
-    public func present(_ sheet: Sheet) {
+    func present(_ sheet: Sheet) {
         self.sheet = sheet
     }
 
-    public func presentFullScreen(_ screen: FullScreen) {
+    func presentFullScreen(_ screen: FullScreen) {
         fullScreen = screen
     }
 
-    public func dismiss() {
+    func dismiss() {
         sheet = nil
         fullScreen = nil
     }

@@ -4,8 +4,8 @@ import SwiftUI
 
 /// 定型チェックリスト。物件詳細の中で完結し、別画面にはしない
 struct ChecklistTabView: View {
-    @Bindable var viewModel: ChecklistTabViewModel
-    let property: Property
+    @Bindable private var viewModel: ChecklistTabViewModel
+    private let property: Property
 
     init(viewModel: ChecklistTabViewModel, property: Property) {
         self.viewModel = viewModel
@@ -40,10 +40,10 @@ struct ChecklistTabView: View {
 private struct ChecklistRow: View {
     private static let pickerWidth: CGFloat = 180
 
-    let item: CheckItem
-    let result: CheckResult?
-    let onRatingChange: (CheckResult.Rating?) -> Void
-    let onNoteCommit: (String) -> Void
+    private let item: CheckItem
+    private let result: CheckResult?
+    private let onRatingChange: (CheckResult.Rating?) -> Void
+    private let onNoteCommit: (String) -> Void
     @State private var note = ""
 
     init(
