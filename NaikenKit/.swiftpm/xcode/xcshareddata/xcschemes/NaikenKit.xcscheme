@@ -62,6 +62,20 @@
                ReferencedContainer = "container:">
             </BuildableReference>
          </BuildActionEntry>
+         <BuildActionEntry
+            buildForTesting = "YES"
+            buildForRunning = "YES"
+            buildForProfiling = "YES"
+            buildForArchiving = "YES"
+            buildForAnalyzing = "YES">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "Features"
+               BuildableName = "Features"
+               BlueprintName = "Features"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </BuildActionEntry>
       </BuildActionEntries>
    </BuildAction>
    <TestAction
@@ -98,6 +112,16 @@
                BlueprintIdentifier = "PlatformTests"
                BuildableName = "PlatformTests"
                BlueprintName = "PlatformTests"
+               ReferencedContainer = "container:">
+            </BuildableReference>
+         </TestableReference>
+         <TestableReference
+            skipped = "NO">
+            <BuildableReference
+               BuildableIdentifier = "primary"
+               BlueprintIdentifier = "FeaturesTests"
+               BuildableName = "FeaturesTests"
+               BlueprintName = "FeaturesTests"
                ReferencedContainer = "container:">
             </BuildableReference>
          </TestableReference>

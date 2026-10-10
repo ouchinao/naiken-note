@@ -14,6 +14,7 @@ let package = Package(
         .library(name: "Data", targets: ["Data"]),
         .library(name: "Platform", targets: ["Platform"]),
         .library(name: "DesignSystem", targets: ["DesignSystem"]),
+        .library(name: "Features", targets: ["Features"]),
     ],
     dependencies: [
         .package(url: "https://github.com/SimplyDanny/SwiftLintPlugins", from: "0.58.0"),
@@ -38,6 +39,12 @@ let package = Package(
             name: "DesignSystem",
             plugins: [swiftLint]
         ),
+        .target(
+            name: "Features",
+            dependencies: ["Domain", "DesignSystem"],
+            resources: [.process("Resources")],
+            plugins: [swiftLint]
+        ),
         .testTarget(
             name: "DomainTests",
             dependencies: ["Domain"],
@@ -51,6 +58,11 @@ let package = Package(
         .testTarget(
             name: "PlatformTests",
             dependencies: ["Platform", "Domain"],
+            plugins: [swiftLint]
+        ),
+        .testTarget(
+            name: "FeaturesTests",
+            dependencies: ["Features", "Domain"],
             plugins: [swiftLint]
         ),
     ]
