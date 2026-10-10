@@ -5,13 +5,14 @@ import Observation
 @MainActor
 @Observable
 public final class MeasurementEditorViewModel {
-    enum Notice {
+    enum Notice: Equatable {
         case invalidInput(message: String)
         case failed(message: String)
     }
 
     // MARK: - State
 
+    @ObservationIgnored private var original: Measurement?
     var label = ""
     var valueText = ""
     var note = ""
@@ -37,7 +38,6 @@ public final class MeasurementEditorViewModel {
 
     // MARK: - Init
 
-    @ObservationIgnored private var original: Measurement?
     private let propertyID: UUID
     private let measurementID: UUID?
     private let fetchProperty: FetchPropertyUseCase

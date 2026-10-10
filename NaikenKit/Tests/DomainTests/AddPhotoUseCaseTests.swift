@@ -43,7 +43,7 @@ struct AddPhotoUseCaseTests {
 
         let photo = try await useCase.execute(propertyID: UUID(), original: Data(), roomTag: .kitchen)
 
-        #expect(photo.takenAt >= before)
+        #expect(photo.takenAt >= before && photo.takenAt <= Date())
     }
 
     @Test("既存の写真の後ろに並べる")
@@ -65,6 +65,8 @@ struct AddPhotoUseCaseTests {
         _ = try await useCase.execute(propertyID: propertyID, original: Data(), roomTag: .living)
 
         let saved = try #require(repository.saved.first)
-        #expect(saved.propertyID == propertyID && saved.imageData == Data("image-2048".utf8))
+        #expect(saved.propertyID == propertyID)
+        #expect(saved.imageData == Data("image-2048".utf8))
+        #expect(saved.thumbnailData == Data("thumbnail-320".utf8))
     }
 }
