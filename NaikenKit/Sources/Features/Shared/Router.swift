@@ -9,11 +9,13 @@ public final class Router {
         case propertyDetail(id: UUID)
         case comparison(ids: [UUID])
         case settings
+        case customers
     }
 
     public enum Sheet: Identifiable {
         case propertyEditor(id: UUID?)
         case measurementEditor(propertyID: UUID, id: UUID?)
+        case libraryImport(propertyID: UUID)
         case paywall
 
         public var id: String {
@@ -22,6 +24,8 @@ public final class Router {
                 return "propertyEditor-\(id?.uuidString ?? "new")"
             case .measurementEditor(let propertyID, let id):
                 return "measurementEditor-\(propertyID)-\(id?.uuidString ?? "new")"
+            case .libraryImport(let propertyID):
+                return "libraryImport-\(propertyID)"
             case .paywall:
                 return "paywall"
             }

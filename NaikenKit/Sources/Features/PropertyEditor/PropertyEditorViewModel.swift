@@ -7,6 +7,7 @@ import Observation
 public final class PropertyEditorViewModel {
     enum Notice: Equatable {
         case limitReached(limit: Int)
+        case proRequired
         case invalidInput(message: String)
         case failed(message: String)
     }
@@ -22,6 +23,8 @@ public final class PropertyEditorViewModel {
     var walkMinutesText = ""
     var visitedAt = Date()
     var memo = ""
+    var customerID: UUID?
+    private(set) var customers: [Customer] = []
     private var isSaving = false
     private(set) var didSave = false
     private(set) var notice: Notice?
@@ -41,6 +44,10 @@ public final class PropertyEditorViewModel {
         return propertyID == nil
     }
 
+    var canAssignCustomer: Bool {
+        return entitlementState.current.canUseCustomerFolders
+    }
+
     var canSave: Bool {
         return !name.trimmingCharacters(in: .whitespacesAndNewlines).isEmpty && !isSaving
     }
@@ -51,23 +58,30 @@ public final class PropertyEditorViewModel {
     private let fetchProperty: FetchPropertyUseCase
     private let addProperty: AddPropertyUseCase
     private let updateProperty: UpdatePropertyUseCase
+    private let fetchCustomers: FetchCustomersUseCase
+    private let entitlementState: any EntitlementState
 
     public init(
         propertyID: UUID?,
         fetchProperty: FetchPropertyUseCase,
         addProperty: AddPropertyUseCase,
-        updateProperty: UpdatePropertyUseCase
+        updateProperty: UpdatePropertyUseCase,
+        fetchCustomers: FetchCustomersUseCase,
+        entitlementState: any EntitlementState
     ) {
         self.propertyID = propertyID
         self.fetchProperty = fetchProperty
         self.addProperty = addProperty
         self.updateProperty = updateProperty
+        self.fetchCustomers = fetchCustomers
+        self.entitlementState = entitlementState
     }
 
     // MARK: - Actions
 
     func load() async {
         do {
+            customers = try await fetchCustomers.execute()
             if let propertyID, let property = try await fetchProperty.execute(id: propertyID) {
                 original = property
                 fill(from: property)
@@ -95,6 +109,8 @@ public final class PropertyEditorViewModel {
             didSave = true
         } catch AddPropertyUseCase.Failure.limitReached(let limit) {
             notice = .limitReached(limit: limit)
+        } catch AddPropertyUseCase.Failure.proRequired, UpdatePropertyUseCase.Failure.proRequired {
+            notice = .proRequired
         } catch {
             notice = .failed(message: error.localizedDescription)
         }
@@ -111,6 +127,7 @@ public final class PropertyEditorViewModel {
         walkMinutesText = property.walkMinutes.map(String.init) ?? ""
         visitedAt = property.visitedAt
         memo = property.memo
+        customerID = property.customerID
     }
 
     private func makeProperty() -> Property? {
@@ -132,6 +149,7 @@ public final class PropertyEditorViewModel {
             photos: original?.photos ?? [],
             measurements: original?.measurements ?? [],
             checkResults: original?.checkResults ?? [],
+            customerID: customerID,
             createdAt: original?.createdAt ?? Date()
         )
     }

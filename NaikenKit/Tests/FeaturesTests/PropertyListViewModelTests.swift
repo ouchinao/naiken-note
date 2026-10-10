@@ -99,14 +99,48 @@ struct PropertyListViewModelTests {
         #expect(!viewModel.isSelecting && viewModel.selectedIDs.isEmpty)
     }
 
+    @Test("Pro ならお客様のフォルダで絞り込める")
+    func filtersByCustomerForPro() async {
+        let customerID = UUID()
+        let owned = Property(id: UUID(), name: "山田様の物件", visitedAt: Date(), customerID: customerID, createdAt: Date())
+        let other = Property(id: UUID(), name: "未分類の物件", visitedAt: Date(), createdAt: Date())
+        let viewModel = makeViewModel(
+            repository: PropertyRepositoryMock(properties: [owned, other]),
+            state: EntitlementStateStub(current: .pro)
+        )
+
+        await viewModel.select(.customer(customerID))
+
+        #expect(viewModel.showsFolderMenu && viewModel.properties.map(\.id) == [owned.id])
+    }
+
+    @Test("Pro が切れたら、お客様のフォルダの絞り込みを外してすべての物件を出す")
+    func clearsFilterWhenProExpires() async {
+        let owned = Property(id: UUID(), name: "山田様の物件", visitedAt: Date(), customerID: UUID(), createdAt: Date())
+        let other = Property(id: UUID(), name: "未分類の物件", visitedAt: Date(), createdAt: Date())
+        let state = EntitlementStateStub(current: .pro)
+        let viewModel = makeViewModel(repository: PropertyRepositoryMock(properties: [owned, other]), state: state)
+        await viewModel.select(.unassigned)
+        state.current = .unlocked
+
+        await viewModel.load()
+
+        #expect(!viewModel.showsFolderMenu && viewModel.filter == .all && viewModel.properties.count == 2)
+    }
+
     // MARK: - Private
 
-    private func makeViewModel(repository: PropertyRepositoryMock) -> PropertyListViewModel {
+    private func makeViewModel(
+        repository: PropertyRepositoryMock,
+        state: EntitlementStateStub = EntitlementStateStub(current: .free)
+    ) -> PropertyListViewModel {
         return PropertyListViewModel(
             fetchProperties: FetchPropertiesUseCase(repository: repository),
             addProperty: AddPropertyUseCase(repository: repository, entitlement: EntitlementProviderStub(current: .free)),
+            fetchCustomers: FetchCustomersUseCase(repository: CustomerRepositoryStub()),
             loadPhotoImage: LoadPhotoImageUseCase(repository: PhotoRepositoryStub()),
-            storeChanges: StoreChangeObservingStub()
+            storeChanges: StoreChangeObservingStub(),
+            entitlementState: state
         )
     }
 

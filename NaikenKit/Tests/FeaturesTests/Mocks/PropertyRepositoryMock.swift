@@ -23,6 +23,10 @@ final class PropertyRepositoryMock: PropertyRepository, @unchecked Sendable {
         return properties
     }
 
+    func fetchAll(visitedAfter date: Date) async throws -> [Property] {
+        return try await fetchAll().filter { $0.visitedAt > date }
+    }
+
     func fetch(id: UUID) async throws -> Property? {
         if let failure {
             throw failure

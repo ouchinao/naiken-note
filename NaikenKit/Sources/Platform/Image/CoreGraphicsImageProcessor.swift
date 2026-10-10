@@ -38,9 +38,8 @@ public struct CoreGraphicsImageProcessor: ImageProcessor {
         return ExifDateParser.date(from: text, offset: offset)
     }
 
-    // MARK: - Private
-
-    private static func resizedJPEG(from data: Data, maxPixelSize: Int) throws -> Data {
+    /// private にしないのは、写真ライブラリのサムネイルにも使うため
+    static func resizedJPEG(from data: Data, maxPixelSize: Int) throws -> Data {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             throw Failure.unreadableImage
         }

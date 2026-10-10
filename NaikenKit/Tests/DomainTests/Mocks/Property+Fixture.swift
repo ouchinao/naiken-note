@@ -7,7 +7,8 @@ extension Property {
         visitedAt: Date = Date(timeIntervalSince1970: 1_800_000_000),
         photos: [Photo] = [],
         measurements: [Measurement] = [],
-        checkResults: [CheckResult] = []
+        checkResults: [CheckResult] = [],
+        customerID: UUID? = nil
     ) -> Property {
         return Property(
             id: UUID(),
@@ -16,6 +17,7 @@ extension Property {
             photos: photos,
             measurements: measurements,
             checkResults: checkResults,
+            customerID: customerID,
             createdAt: Date(timeIntervalSince1970: 1_800_000_000)
         )
     }

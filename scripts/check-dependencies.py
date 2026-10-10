@@ -31,6 +31,7 @@ ALLOWED_PACKAGES = {"swiftlintplugins"}
 # Xcode ターゲットごとに使ってよい NaikenKit のプロダクト
 ALLOWED_PRODUCTS = {
     "NaikenNote": {"Domain", "Data", "Platform", "DesignSystem", "Features"},
+    "NaikenWidgetExtension": {"Domain", "DesignSystem"},
 }
 
 

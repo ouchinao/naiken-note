@@ -3,8 +3,8 @@ import Testing
 @testable import Domain
 
 struct LoadProductsUseCaseTests {
-    @Test("販売中の買い切りだけを返し、それ以外の商品は除く")
-    func returnsProductsOnSale() async throws {
+    @Test("買い切り、サブスクの順に並べ、知らない商品は除く")
+    func ordersUnlockBeforeSubscriptionAndDropsUnknown() async throws {
         let products = [
             PurchasableProduct(id: ProductID.proMonthly, displayName: "Pro", displayPrice: "¥980"),
             PurchasableProduct(id: "com.example.unknown", displayName: "?", displayPrice: "¥0"),
@@ -14,6 +14,6 @@ struct LoadProductsUseCaseTests {
 
         let result = try await useCase.execute()
 
-        #expect(result.map(\.id) == [ProductID.unlock])
+        #expect(result.map(\.id) == [ProductID.unlock, ProductID.proMonthly])
     }
 }

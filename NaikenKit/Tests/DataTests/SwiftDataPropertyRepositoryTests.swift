@@ -14,6 +14,8 @@ struct SwiftDataPropertyRepositoryTests {
     @Test("保存した物件をすべての項目そのままで読み出せる")
     func roundTripsAllFields() async throws {
         let repository = SwiftDataPropertyRepository(modelContainer: container)
+        let customer = Customer(id: UUID(), name: "山田様", createdAt: Date())
+        try await SwiftDataCustomerRepository(modelContainer: container).save(customer)
         let property = Property(
             id: UUID(),
             name: "A棟201",
@@ -24,6 +26,7 @@ struct SwiftDataPropertyRepositoryTests {
             walkMinutes: 6,
             visitedAt: Date(timeIntervalSince1970: 1_800_000_000),
             memo: "角部屋",
+            customerID: customer.id,
             createdAt: Date(timeIntervalSince1970: 1_799_000_000)
         )
 
@@ -44,6 +47,20 @@ struct SwiftDataPropertyRepositoryTests {
         let ids = try await repository.fetchAll().map(\.id)
 
         #expect(Set(ids) == [first.id, second.id])
+    }
+
+    @Test("指定した日時より後に内見する物件だけを読み出せる")
+    func fetchesPropertiesVisitedAfterDate() async throws {
+        let repository = SwiftDataPropertyRepository(modelContainer: container)
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let past = Property(id: UUID(), name: "済み", visitedAt: now.addingTimeInterval(-60), createdAt: now)
+        let upcoming = Property(id: UUID(), name: "これから", visitedAt: now.addingTimeInterval(60), createdAt: now)
+        try await repository.save(past)
+        try await repository.save(upcoming)
+
+        let properties = try await repository.fetchAll(visitedAfter: now)
+
+        #expect(properties.map(\.name) == ["これから"])
     }
 
     @Test("同じ物件を保存し直すと上書きし、件数は増えない")

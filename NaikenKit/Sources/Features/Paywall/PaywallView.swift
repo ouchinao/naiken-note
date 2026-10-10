@@ -22,6 +22,7 @@ public struct PaywallView: View {
                     }
                     .disabled(viewModel.isRestoring)
                     .frame(maxWidth: .infinity)
+                    SubscriptionTermsView()
                 }
                 .padding()
             }
@@ -76,13 +77,20 @@ public struct PaywallView: View {
                     Button {
                         Task { await viewModel.purchase(product) }
                     } label: {
-                        Text("\(product.displayName) \(product.displayPrice)")
+                        Text(title(of: product))
                     }
                     .buttonStyle(.primary)
                     .disabled(!viewModel.canPurchase(product))
                 }
             }
         }
+    }
+
+    private func title(of product: PurchasableProduct) -> String {
+        if product.isSubscription {
+            return String(localized: "\(product.displayName) \(product.displayPrice)/月", bundle: .module)
+        }
+        return "\(product.displayName) \(product.displayPrice)"
     }
 }
 
@@ -123,6 +131,29 @@ private struct PlanFeaturesView: View {
                 .padding(.top, Spacing.small)
             Label("物件を何件でも登録", systemImage: "infinity")
             Label("比較表を画像にしてLINEなどで送る", systemImage: "square.and.arrow.up")
+            Text("Proで増えること")
+                .font(.headline)
+                .padding(.top, Spacing.small)
+            Label("お客様ごとのフォルダで物件を整理", systemImage: "folder")
+        }
+    }
+}
+
+private struct SubscriptionTermsView: View {
+    var body: some View {
+        VStack(alignment: .leading, spacing: Spacing.small) {
+            Text("Proは月額の自動更新サブスクリプションです。購入の確定時にApple IDに請求され、期間終了の24時間前までに解約しない限り自動で更新されます。解約はApp Storeのアカウント設定から行えます。")
+                .font(.caption)
+                .foregroundStyle(.secondary)
+            HStack(spacing: Spacing.large) {
+                if let termsOfUse = AppLinks.termsOfUse {
+                    Link("利用規約", destination: termsOfUse)
+                }
+                if let privacyPolicy = AppLinks.privacyPolicy {
+                    Link("プライバシーポリシー", destination: privacyPolicy)
+                }
+            }
+            .font(.caption)
         }
     }
 }

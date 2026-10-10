@@ -29,7 +29,40 @@
     ]
   },
   "subscriptionGroups" : [
+    {
+      "id" : "21000001",
+      "localizations" : [
 
+      ],
+      "name" : "Pro",
+      "subscriptions" : [
+        {
+          "adHocOffers" : [
+
+          ],
+          "codeOffers" : [
+
+          ],
+          "displayPrice" : "980",
+          "familyShareable" : false,
+          "groupNumber" : 1,
+          "internalID" : "6736000002",
+          "introductoryOffer" : null,
+          "localizations" : [
+            {
+              "description" : "物件を何件でも登録でき、お客様ごとのフォルダで整理できます",
+              "displayName" : "Pro",
+              "locale" : "ja"
+            }
+          ],
+          "productID" : "com.example.naikennote.pro.monthly",
+          "recurringSubscriptionPeriod" : "P1M",
+          "referenceName" : "Pro Monthly",
+          "subscriptionGroupID" : "21000001",
+          "type" : "RecurringSubscription"
+        }
+      ]
+    }
   ],
   "version" : {
     "major" : 3,

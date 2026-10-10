@@ -16,6 +16,11 @@ public struct SettingsView: View {
                 LabeledContent("状態", value: cloudStatusText)
             }
             purchaseSection
+            if viewModel.showsCustomerFolders {
+                Section("Pro") {
+                    Button("顧客フォルダを管理") { router.push(.customers) }
+                }
+            }
             Section("サポート") {
                 if let contact = AppLinks.contact {
                     Link("問い合わせ", destination: contact)

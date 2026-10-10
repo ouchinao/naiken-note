@@ -19,6 +19,10 @@ final class PropertyRepositoryMock: PropertyRepository, @unchecked Sendable {
         return properties
     }
 
+    func fetchAll(visitedAfter date: Date) async throws -> [Property] {
+        return properties.filter { $0.visitedAt > date }
+    }
+
     func fetch(id: UUID) async throws -> Property? {
         return properties.first { $0.id == id }
     }

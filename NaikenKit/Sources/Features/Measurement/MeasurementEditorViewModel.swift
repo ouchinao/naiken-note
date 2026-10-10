@@ -75,6 +75,11 @@ public final class MeasurementEditorViewModel {
         }
     }
 
+    /// 測った値をそのまま保存しないのは、LiDAR のない機種では誤差が大きく、保存前に手で直せるようにするため
+    func applyMeasured(millimeters: Int) {
+        valueText = String(millimeters)
+    }
+
     func save() async {
         guard let parsed = NumberInput.integer(from: valueText), let value = parsed.value else {
             notice = .invalidInput(message: String(localized: "寸法をミリ単位の数字で入力してください", bundle: .module))

@@ -52,6 +52,16 @@ struct MeasurementEditorViewModelTests {
         #expect(saved?.valueMillimeters == 1_700 && saved?.note == "レールの内側" && viewModel.didSave)
     }
 
+    @Test("ARで測った値は、保存する前に手で直せるよう入力欄に入れる")
+    func appliesMeasuredValueToField() {
+        let repository = MeasurementRepositoryMock()
+        let viewModel = makeViewModel(repository: repository)
+
+        viewModel.applyMeasured(millimeters: 1_694)
+
+        #expect(viewModel.valueText == "1694" && repository.saved.isEmpty)
+    }
+
     // MARK: - Private
 
     private func makeViewModel(

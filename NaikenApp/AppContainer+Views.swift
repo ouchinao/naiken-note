@@ -16,6 +16,8 @@ extension AppContainer {
             ComparisonView(viewModel: makeComparisonViewModel(propertyIDs: ids))
         case .settings:
             SettingsView(viewModel: makeSettingsViewModel())
+        case .customers:
+            CustomersView(viewModel: makeCustomersViewModel())
         }
     }
 
@@ -25,7 +27,12 @@ extension AppContainer {
         case .propertyEditor(let id):
             PropertyEditorView(viewModel: makePropertyEditorViewModel(propertyID: id))
         case .measurementEditor(let propertyID, let id):
-            MeasurementEditorView(viewModel: makeMeasurementEditorViewModel(propertyID: propertyID, measurementID: id))
+            MeasurementEditorView(
+                viewModel: makeMeasurementEditorViewModel(propertyID: propertyID, measurementID: id),
+                arMeasure: makeARMeasureLauncher()
+            )
+        case .libraryImport(let propertyID):
+            LibraryImportView(viewModel: makeLibraryImportViewModel(propertyID: propertyID))
         case .paywall:
             PaywallView(viewModel: makePaywallViewModel())
         }

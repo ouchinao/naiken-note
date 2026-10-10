@@ -13,6 +13,7 @@ public struct Property: Identifiable, Hashable, Sendable {
     public let photos: [Photo]
     public let measurements: [Measurement]
     public let checkResults: [CheckResult]
+    public let customerID: UUID?
     public let createdAt: Date
 
     public init(
@@ -28,6 +29,7 @@ public struct Property: Identifiable, Hashable, Sendable {
         photos: [Photo] = [],
         measurements: [Measurement] = [],
         checkResults: [CheckResult] = [],
+        customerID: UUID? = nil,
         createdAt: Date
     ) {
         self.id = id
@@ -42,6 +44,7 @@ public struct Property: Identifiable, Hashable, Sendable {
         self.photos = photos.sorted(by: Photo.displayOrder)
         self.measurements = measurements.sorted(by: Measurement.displayOrder)
         self.checkResults = CheckResult.onePerItem(checkResults)
+        self.customerID = customerID
         self.createdAt = createdAt
     }
 }

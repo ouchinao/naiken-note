@@ -10,12 +10,13 @@
 ## 構成
 
 ```
-NaikenNote.xcodeproj   アプリのXcodeプロジェクト
+NaikenNote.xcodeproj   アプリとウィジェットのXcodeプロジェクト
 NaikenApp/             Appターゲット(Composition Root、RootView、アセット)
+NaikenWidget/          ウィジェット拡張(次の内見予定)
 NaikenKit/             ローカルSwiftPMパッケージ
   Sources/Domain        Entity、UseCase、Repository / Service の protocol(Foundationのみ)
   Sources/Data          SwiftDataの @Model と Repository 実装
-  Sources/Platform      画像処理、StoreKit
+  Sources/Platform      画像処理、StoreKit、PhotoKit、ARセッション、ウィジェット更新
   Sources/DesignSystem  色・余白・共通部品
   Sources/Features      画面ごとの View + ViewModel、Router、EntitlementStore
   Tests/                Swift Testing によるユニットテスト
@@ -32,10 +33,11 @@ NaikenNote.storekit    StoreKit Configuration(Xcodeでの購入テスト用)
 
 | 場所 | 値 |
 | --- | --- |
-| Xcode の Signing & Capabilities(NaikenNote) | Team と Bundle Identifier |
-| `Config/NaikenNote/NaikenNote.entitlements` | iCloudコンテナ |
+| Xcode の Signing & Capabilities(NaikenNote と NaikenWidgetExtension) | Team と Bundle Identifier |
+| `Config/NaikenNote/NaikenNote.entitlements` | iCloudコンテナ、App Group |
+| `Config/NaikenWidget/NaikenWidget.entitlements` | App Group |
 | `NaikenKit/Sources/Data/ModelContainerFactory.swift` | iCloudコンテナID |
-| `NaikenKit/Sources/Domain/Entities/ProductID.swift` | Product ID |
+| `NaikenKit/Sources/Domain/Entities/ProductID.swift`、`SharedStorage.swift` | Product ID、App Group ID |
 | `NaikenNote.storekit` | Product ID |
 
 リリース前に CloudKit Console で Development のスキーマを Production へデプロイする。
@@ -62,10 +64,10 @@ GitHub Actions(`.github/workflows/ci.yml`)が push ごとに次を確かめ、�
 | 依存関係 | `scripts/check-dependencies.py` がターゲット間の依存方向と、外部パッケージが SwiftLint だけであることを確かめる。パッケージは `Package.resolved` に書かれた版だけを使い、書き換わったら失敗にする |
 | lint | SwiftLint を `--strict` で回す(警告も失敗)。層ごとに import してよいフレームワークも `.swiftlint.yml` の `custom_rules` で縛る |
 | テスト | `NaikenKit` の全テストを iOS シミュレータで回す |
-| ビルド | アプリをビルドする |
+| ビルド | アプリとウィジェットをビルドする |
 
 SwiftLint の本体は、ビルドプラグインが取ってくるものと同じ版を CI でも使う。
-カメラ、StoreKit Sandbox、CloudKit同期は実機で手動確認する。
+カメラ、ARKit、StoreKit Sandbox、CloudKit同期は実機で手動確認する。
 
 ## ライセンス
 

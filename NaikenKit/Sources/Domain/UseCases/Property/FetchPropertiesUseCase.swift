@@ -7,8 +7,9 @@ public struct FetchPropertiesUseCase: Sendable {
         self.repository = repository
     }
 
-    public func execute() async throws -> [Property] {
-        return try await repository.fetchAll().sorted(by: Self.newestVisitFirst)
+    public func execute(filter: CustomerFilter = .all) async throws -> [Property] {
+        let properties = try await repository.fetchAll()
+        return properties.filter { filter.includes($0) }.sorted(by: Self.newestVisitFirst)
     }
 
     // MARK: - Private

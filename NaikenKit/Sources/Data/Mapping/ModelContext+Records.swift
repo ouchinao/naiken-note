@@ -21,6 +21,12 @@ extension ModelContext {
         return try fetch(descriptor).first
     }
 
+    func customerRecord(id: UUID) throws -> CustomerRecord? {
+        var descriptor = FetchDescriptor<CustomerRecord>(predicate: #Predicate { $0.id == id })
+        descriptor.fetchLimit = 1
+        return try fetch(descriptor).first
+    }
+
     /// 失敗した変更を残さないのは、Repository の actor が同じ context を使い続けるので、次の保存にも失敗した変更が混ざるため
     func commit() throws {
         do {

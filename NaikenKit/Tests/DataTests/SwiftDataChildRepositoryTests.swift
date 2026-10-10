@@ -77,6 +77,29 @@ struct SwiftDataChildRepositoryTests {
         #expect(measurements.map(\.valueMillimeters) == [1_700])
     }
 
+    @Test("顧客を削除しても物件は残り、未分類になる")
+    func deletingCustomerKeepsProperties() async throws {
+        let propertyRepository = SwiftDataPropertyRepository(modelContainer: container)
+        let customerRepository = SwiftDataCustomerRepository(modelContainer: container)
+        let customer = Customer(id: UUID(), name: "山田様", createdAt: Date())
+        try await customerRepository.save(customer)
+        let assigned = Property(
+            id: property.id,
+            name: property.name,
+            visitedAt: property.visitedAt,
+            customerID: customer.id,
+            createdAt: property.createdAt
+        )
+        try await propertyRepository.save(assigned)
+        let beforeDeletion = try await propertyRepository.fetch(id: property.id)
+
+        try await customerRepository.delete(id: customer.id)
+
+        let fetched = try await propertyRepository.fetch(id: property.id)
+        #expect(beforeDeletion?.customerID == customer.id)
+        #expect(fetched != nil && fetched?.customerID == nil)
+    }
+
     @Test("採寸のメモと紐づけた写真を保存して読み出せる")
     func roundTripsMeasurementFields() async throws {
         let propertyRepository = SwiftDataPropertyRepository(modelContainer: container)

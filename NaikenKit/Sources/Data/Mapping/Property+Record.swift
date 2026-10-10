@@ -16,6 +16,7 @@ extension Property {
             photos: (record.photos ?? []).map(Photo.init(record:)),
             measurements: (record.measurements ?? []).map(Measurement.init(record:)),
             checkResults: (record.checkResults ?? []).map(CheckResult.init(record:)),
+            customerID: record.customer?.id,
             createdAt: record.createdAt
         )
     }

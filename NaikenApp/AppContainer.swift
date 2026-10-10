@@ -3,6 +3,7 @@ import Domain
 import Features
 import Foundation
 import Platform
+import SwiftUI
 
 /// ViewModel や UseCase を各画面で作らないのは、Data と Platform の具象型を Features から見えなくするため
 @MainActor
@@ -16,6 +17,8 @@ final class AppContainer {
     private let storeChanges: any StoreChangeObserving = StoreChangeObserver()
     private let purchaseService: any PurchaseService
     private let imageProcessor: any ImageProcessor = CoreGraphicsImageProcessor()
+    private let libraryScanner: any PhotoLibraryScanner = PhotoKitLibraryScanner()
+    private let upcomingVisitPublisher: any UpcomingVisitPublishing = WidgetUpcomingVisitPublisher()
     private let cloudAccountStatus: any CloudAccountStatusProviding = CloudKitAccountStatusProvider(
         containerID: SwiftDataRepositories.cloudKitContainerID
     )
@@ -33,8 +36,10 @@ final class AppContainer {
         return PropertyListViewModel(
             fetchProperties: FetchPropertiesUseCase(repository: repositories.properties),
             addProperty: addProperty,
+            fetchCustomers: fetchCustomers,
             loadPhotoImage: loadPhotoImage,
-            storeChanges: storeChanges
+            storeChanges: storeChanges,
+            entitlementState: entitlementStore
         )
     }
 
@@ -43,7 +48,9 @@ final class AppContainer {
             propertyID: propertyID,
             fetchProperty: fetchProperty,
             addProperty: addProperty,
-            updateProperty: UpdatePropertyUseCase(repository: repositories.properties)
+            updateProperty: UpdatePropertyUseCase(repository: repositories.properties, entitlement: entitlementStore),
+            fetchCustomers: fetchCustomers,
+            entitlementState: entitlementStore
         )
     }
 
@@ -91,6 +98,16 @@ final class AppContainer {
         return PhotoViewerViewModel(photoID: photoID, loadPhotoImage: loadPhotoImage)
     }
 
+    func makeLibraryImportViewModel(propertyID: UUID) -> LibraryImportViewModel {
+        return LibraryImportViewModel(
+            propertyID: propertyID,
+            fetchProperty: fetchProperty,
+            scanLibrary: ScanLibraryPhotosUseCase(scanner: libraryScanner),
+            importLibrary: ImportLibraryPhotosUseCase(scanner: libraryScanner, addPhoto: addPhoto),
+            loadThumbnail: LoadLibraryThumbnailUseCase(scanner: libraryScanner)
+        )
+    }
+
     func makeComparisonViewModel(propertyIDs: [UUID]) -> ComparisonViewModel {
         return ComparisonViewModel(
             propertyIDs: propertyIDs,
@@ -122,6 +139,35 @@ final class AppContainer {
         )
     }
 
+    func makeCustomersViewModel() -> CustomersViewModel {
+        return CustomersViewModel(
+            fetchCustomers: fetchCustomers,
+            saveCustomer: SaveCustomerUseCase(repository: repositories.customers, entitlement: entitlementStore),
+            deleteCustomer: DeleteCustomerUseCase(repository: repositories.customers),
+            storeChanges: storeChanges
+        )
+    }
+
+    func makeARMeasureLauncher() -> ARMeasureLauncher? {
+        if !ARMeasureSession.isSupported {
+            return nil
+        }
+        return ARMeasureLauncher { onFinish in
+            let session = ARMeasureSession()
+            let view = ARMeasureView(
+                viewModel: ARMeasureViewModel(measuring: session),
+                session: session.session,
+                onFinish: onFinish
+            )
+            return AnyView(view)
+        }
+    }
+
+    func keepUpcomingVisitsUpdated() async {
+        let refresh = RefreshUpcomingVisitsUseCase(repository: repositories.properties, publisher: upcomingVisitPublisher)
+        await KeepUpcomingVisitsUpdatedUseCase(refresh: refresh, storeChanges: storeChanges).execute()
+    }
+
     // MARK: - Private
 
     private var fetchProperty: FetchPropertyUseCase {
@@ -130,6 +176,10 @@ final class AppContainer {
 
     private var addProperty: AddPropertyUseCase {
         return AddPropertyUseCase(repository: repositories.properties, entitlement: entitlementStore)
+    }
+
+    private var fetchCustomers: FetchCustomersUseCase {
+        return FetchCustomersUseCase(repository: repositories.customers)
     }
 
     private var addPhoto: AddPhotoUseCase {

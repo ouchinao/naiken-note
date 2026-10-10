@@ -17,6 +17,9 @@ public struct PropertyListView: View {
             .safeAreaInset(edge: .bottom) { compareBar }
             .task { await viewModel.load() }
             .task { await viewModel.observeChanges() }
+            .onChange(of: viewModel.showsFolderMenu) {
+                Task { await viewModel.load() }
+            }
             .alert(
                 "確認",
                 isPresented: $viewModel.isNoticePresented,
@@ -54,6 +57,7 @@ public struct PropertyListView: View {
                     PropertyRow(
                         property: property,
                         thumbnail: viewModel.thumbnails[property.id],
+                        customerName: viewModel.customerName(of: property),
                         isSelected: viewModel.isSelecting ? viewModel.isSelected(property) : nil
                     )
                 }
@@ -76,6 +80,11 @@ public struct PropertyListView: View {
                 Label("設定", systemImage: "gearshape")
             }
         }
+        if viewModel.showsFolderMenu {
+            ToolbarItem(placement: .topBarLeading) {
+                folderMenu
+            }
+        }
         ToolbarItemGroup(placement: .topBarTrailing) {
             if viewModel.isSelecting {
                 Button("キャンセル") { viewModel.finishSelecting() }
@@ -91,6 +100,20 @@ public struct PropertyListView: View {
         }
     }
 
+    private var folderMenu: some View {
+        Menu {
+            Picker("フォルダ", selection: filterBinding) {
+                Text("すべて").tag(CustomerFilter.all)
+                ForEach(viewModel.customers) { customer in
+                    Text(customer.name).tag(CustomerFilter.customer(customer.id))
+                }
+                Text("未分類").tag(CustomerFilter.unassigned)
+            }
+        } label: {
+            Label("フォルダ", systemImage: "folder")
+        }
+    }
+
     @ViewBuilder
     private var compareBar: some View {
         if viewModel.isSelecting {
@@ -103,6 +126,14 @@ public struct PropertyListView: View {
             .disabled(!viewModel.canCompare)
             .padding()
             .background(.bar)
+        }
+    }
+
+    private var filterBinding: Binding<CustomerFilter> {
+        return Binding {
+            return viewModel.filter
+        } set: { filter in
+            Task { await viewModel.select(filter) }
         }
     }
 

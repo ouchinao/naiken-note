@@ -42,4 +42,9 @@ struct EntitlementTests {
     func exportRequiresUnlock(entitlement: Entitlement, expected: Bool) {
         #expect(entitlement.canExportComparison == expected)
     }
+
+    @Test("顧客別フォルダは Pro だけが使える", arguments: [(Entitlement.free, false), (.unlocked, false), (.pro, true)])
+    func customerFoldersRequirePro(entitlement: Entitlement, expected: Bool) {
+        #expect(entitlement.canUseCustomerFolders == expected)
+    }
 }

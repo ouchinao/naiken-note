@@ -14,11 +14,18 @@ struct SettingsViewModelTests {
         #expect(viewModel.cloudStatus == .signedOut)
     }
 
-    @Test("無料版なら機能を解除するボタンを出し、解除済みなら出さない", arguments: [(Entitlement.free, true), (.unlocked, false)])
-    func showsUnlockButtonOnlyForFreeUser(entitlement: Entitlement, expected: Bool) {
+    @Test("Pro でなければ機能を解除するボタンを出す", arguments: [(Entitlement.free, true), (.unlocked, true), (.pro, false)])
+    func showsUnlockButtonUntilPro(entitlement: Entitlement, expected: Bool) {
         let viewModel = makeViewModel(state: EntitlementStateStub(current: entitlement))
 
         #expect(viewModel.showsUnlockButton == expected)
+    }
+
+    @Test("Pro のときだけ顧客フォルダの管理を出す", arguments: [(Entitlement.unlocked, false), (.pro, true)])
+    func showsCustomerFoldersOnlyForPro(entitlement: Entitlement, expected: Bool) {
+        let viewModel = makeViewModel(state: EntitlementStateStub(current: entitlement))
+
+        #expect(viewModel.showsCustomerFolders == expected)
     }
 
     @Test("復元したら購入状態を読み直して知らせる")

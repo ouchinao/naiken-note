@@ -7,6 +7,7 @@ struct PropertyRow: View {
 
     let property: Property
     let thumbnail: Data?
+    let customerName: String?
     let isSelected: Bool?
 
     var body: some View {
@@ -29,6 +30,9 @@ struct PropertyRow: View {
                     .foregroundStyle(.secondary)
             }
             Spacer(minLength: 0)
+            if let customerName {
+                TagChip(title: customerName)
+            }
         }
         .contentShape(Rectangle())
         .accessibilityElement(children: .combine)
