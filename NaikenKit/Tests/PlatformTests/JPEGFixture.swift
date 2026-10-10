@@ -16,7 +16,6 @@ enum JPEGFixture {
         height: Int,
         dateTimeOriginal: String? = nil,
         offset: String? = nil,
-        tiffDateTime: String? = nil,
         orientation: CGImagePropertyOrientation? = nil
     ) throws -> Data {
         let image = try solidImage(width: width, height: height)
@@ -33,9 +32,6 @@ enum JPEGFixture {
             exif[kCGImagePropertyExifOffsetTimeOriginal] = offset
         }
         var properties: [CFString: Any] = [kCGImagePropertyExifDictionary: exif]
-        if let tiffDateTime {
-            properties[kCGImagePropertyTIFFDictionary] = [kCGImagePropertyTIFFDateTime: tiffDateTime]
-        }
         if let orientation {
             properties[kCGImagePropertyOrientation] = orientation.rawValue
         }
