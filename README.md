@@ -15,7 +15,7 @@ NaikenApp/             Appターゲット(Composition Root、RootView、アセ�
 NaikenKit/             ローカルSwiftPMパッケージ
   Sources/Domain        Entity、UseCase、Repository / Service の protocol(Foundationのみ)
   Sources/Data          SwiftDataの @Model と Repository 実装
-  Sources/Platform      画像処理、StoreKit
+  Sources/Platform      画像処理、StoreKit、ARセッション
   Sources/DesignSystem  色・余白・共通部品
   Sources/Features      画面ごとの View + ViewModel、Router、EntitlementStore
   Tests/                Swift Testing によるユニットテスト
@@ -65,7 +65,7 @@ GitHub Actions(`.github/workflows/ci.yml`)が push ごとに次を確かめ、�
 | ビルド | アプリをビルドする |
 
 SwiftLint の本体は、ビルドプラグインが取ってくるものと同じ版を CI でも使う。
-カメラ、StoreKit Sandbox、CloudKit同期は実機で手動確認する。
+カメラ、ARKit、StoreKit Sandbox、CloudKit同期は実機で手動確認する。
 
 ## ライセンス
 

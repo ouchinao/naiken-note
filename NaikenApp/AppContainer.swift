@@ -3,6 +3,7 @@ import Domain
 import Features
 import Foundation
 import Platform
+import SwiftUI
 
 /// 依存の組み立てをすべてここに集める。Data層とPlatform層の具象型を知っているのはこの型だけ
 @MainActor
@@ -117,6 +118,22 @@ final class AppContainer {
             restorePurchases: restorePurchases,
             entitlementStore: entitlementStore
         )
+    }
+
+    /// ARを使えない端末ではnilを返し、採寸画面にARのボタンを出さない
+    func makeARMeasureLauncher() -> ARMeasureLauncher? {
+        if !ARMeasureSession.isSupported {
+            return nil
+        }
+        return ARMeasureLauncher { onFinish in
+            let session = ARMeasureSession()
+            let view = ARMeasureView(
+                viewModel: ARMeasureViewModel(measuring: session),
+                session: session.session,
+                onFinish: onFinish
+            )
+            return AnyView(view)
+        }
     }
 
     // MARK: - Private

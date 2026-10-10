@@ -26,7 +26,10 @@ extension AppContainer {
         case .propertyEditor(let id):
             PropertyEditorView(viewModel: makePropertyEditorViewModel(propertyID: id))
         case .measurementEditor(let propertyID, let id):
-            MeasurementEditorView(viewModel: makeMeasurementEditorViewModel(propertyID: propertyID, measurementID: id))
+            MeasurementEditorView(
+                viewModel: makeMeasurementEditorViewModel(propertyID: propertyID, measurementID: id),
+                arMeasure: makeARMeasureLauncher()
+            )
         case .paywall:
             PaywallView(viewModel: makePaywallViewModel())
         }

@@ -75,6 +75,11 @@ public final class MeasurementEditorViewModel {
         }
     }
 
+    /// AR測定の結果を寸法欄に入れる。保存前に手で直せる
+    func applyMeasured(millimeters: Int) {
+        valueText = String(millimeters)
+    }
+
     func save() async {
         guard let parsed = NumberInput.integer(from: valueText), let value = parsed.value else {
             notice = .invalidInput(message: String(localized: "寸法をミリ単位の数字で入力してください", bundle: .module))

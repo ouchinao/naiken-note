@@ -4,10 +4,14 @@ import SwiftUI
 
 public struct MeasurementEditorView: View {
     @State private var viewModel: MeasurementEditorViewModel
+    @State private var isMeasuringWithAR = false
     @Environment(Router.self) private var router
+    private let arMeasure: ARMeasureLauncher?
 
-    public init(viewModel: MeasurementEditorViewModel) {
+    /// `arMeasure` がnilならAR採寸のボタンを出さない
+    public init(viewModel: MeasurementEditorViewModel, arMeasure: ARMeasureLauncher?) {
         _viewModel = State(initialValue: viewModel)
+        self.arMeasure = arMeasure
     }
 
     public var body: some View {
@@ -23,6 +27,14 @@ public struct MeasurementEditorView: View {
                         Button("保存") {
                             Task { await viewModel.save() }
                         }
+                    }
+                }
+                .fullScreenCover(isPresented: $isMeasuringWithAR) {
+                    arMeasure?.makeView { millimeters in
+                        if let millimeters {
+                            viewModel.applyMeasured(millimeters: millimeters)
+                        }
+                        isMeasuringWithAR = false
                     }
                 }
         }
@@ -60,6 +72,13 @@ public struct MeasurementEditorView: View {
                         .keyboardType(.numberPad)
                     Text("mm")
                         .foregroundStyle(.secondary)
+                }
+                if arMeasure != nil {
+                    Button {
+                        isMeasuringWithAR = true
+                    } label: {
+                        Label("ARで測る", systemImage: "ruler")
+                    }
                 }
             }
             Section("メモ") {
