@@ -1,22 +1,20 @@
 import Foundation
 
 public struct UpcomingVisit: Identifiable, Codable, Hashable, Sendable {
-    public let propertyID: UUID
+    let propertyID: UUID
     public let name: String
     public let visitAt: Date
     public let nearestStation: String
-    public let walkMinutes: Int?
 
     public var id: UUID {
         return propertyID
     }
 
-    public init(propertyID: UUID, name: String, visitAt: Date, nearestStation: String, walkMinutes: Int?) {
+    public init(propertyID: UUID, name: String, visitAt: Date, nearestStation: String) {
         self.propertyID = propertyID
         self.name = name
         self.visitAt = visitAt
         self.nearestStation = nearestStation
-        self.walkMinutes = walkMinutes
     }
 
     init(property: Property) {
@@ -24,8 +22,7 @@ public struct UpcomingVisit: Identifiable, Codable, Hashable, Sendable {
             propertyID: property.id,
             name: property.name,
             visitAt: property.visitedAt,
-            nearestStation: property.nearestStation,
-            walkMinutes: property.walkMinutes
+            nearestStation: property.nearestStation
         )
     }
 }

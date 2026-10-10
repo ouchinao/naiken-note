@@ -10,11 +10,11 @@ public struct RefreshUpcomingVisitsUseCase: Sendable {
     }
 
     public func execute(now: Date = Date()) async throws {
-        let properties = try await repository.fetchAll()
+        let properties = try await repository.fetchAll(visitedAfter: now)
         let visits = properties
             .filter { $0.visitedAt > now }
             .sorted { $0.visitedAt < $1.visitedAt }
-            .prefix(Limits.upcomingVisitCount)
+            .prefix(Limits.publishedUpcomingVisitCount)
             .map(UpcomingVisit.init(property:))
         await publisher.publish(visits)
     }

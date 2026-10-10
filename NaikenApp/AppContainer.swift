@@ -150,14 +150,9 @@ final class AppContainer {
         }
     }
 
-    // MARK: - Widget
-
     func keepUpcomingVisitsUpdated() async {
         let refresh = RefreshUpcomingVisitsUseCase(repository: repositories.properties, publisher: upcomingVisitPublisher)
-        try? await refresh.execute()
-        for await _ in storeChanges.changes {
-            try? await refresh.execute()
-        }
+        await KeepUpcomingVisitsUpdatedUseCase(refresh: refresh, storeChanges: storeChanges).execute()
     }
 
     // MARK: - Private

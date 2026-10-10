@@ -46,6 +46,20 @@ struct SwiftDataPropertyRepositoryTests {
         #expect(Set(ids) == [first.id, second.id])
     }
 
+    @Test("指定した日時より後に内見する物件だけを読み出せる")
+    func fetchesPropertiesVisitedAfterDate() async throws {
+        let repository = SwiftDataPropertyRepository(modelContainer: container)
+        let now = Date(timeIntervalSince1970: 1_800_000_000)
+        let past = Property(id: UUID(), name: "済み", visitedAt: now.addingTimeInterval(-60), createdAt: now)
+        let upcoming = Property(id: UUID(), name: "これから", visitedAt: now.addingTimeInterval(60), createdAt: now)
+        try await repository.save(past)
+        try await repository.save(upcoming)
+
+        let properties = try await repository.fetchAll(visitedAfter: now)
+
+        #expect(properties.map(\.name) == ["これから"])
+    }
+
     @Test("同じ物件を保存し直すと上書きし、件数は増えない")
     func savingAgainUpdatesInPlace() async throws {
         let repository = SwiftDataPropertyRepository(modelContainer: container)

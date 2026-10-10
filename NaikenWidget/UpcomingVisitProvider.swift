@@ -4,24 +4,29 @@ import WidgetKit
 
 struct UpcomingVisitProvider: TimelineProvider {
     func placeholder(in _: Context) -> UpcomingVisitEntry {
-        return UpcomingVisitEntry.placeholder
+        return .placeholder
     }
 
     func getSnapshot(in context: Context, completion: @escaping (UpcomingVisitEntry) -> Void) {
         if context.isPreview {
-            completion(UpcomingVisitEntry.placeholder)
+            completion(.placeholder)
         } else {
-            completion(UpcomingVisitEntry(date: Date(), visits: upcomingVisits(after: Date())))
+            let now = Date()
+            completion(UpcomingVisitEntry(date: now, visits: upcomingVisits(after: now)))
         }
     }
 
+    /// 内見の時刻を過ぎるたびに読み直して次の予定を出さないのは、読み直せる回数に上限があり、遅れると過ぎた内見を出し続けるため。
+    /// 決まった間隔でも読み直さないのは、表示が変わるのは内見の時刻を過ぎたときだけなため
     func getTimeline(in _: Context, completion: @escaping (Timeline<UpcomingVisitEntry>) -> Void) {
         let now = Date()
         let visits = upcomingVisits(after: now)
-        let entry = UpcomingVisitEntry(date: now, visits: visits)
-        // 決まった間隔で読み直さないのは、表示が変わるのは次の内見の時刻を過ぎたときだけで、更新できる回数にも上限があるため
-        let policy: TimelineReloadPolicy = visits.first.map { .after($0.visitAt) } ?? .never
-        completion(Timeline(entries: [entry], policy: policy))
+        let switchTimes = [now] + visits.map(\.visitAt)
+        let entries = switchTimes.map { date in
+            return UpcomingVisitEntry(date: date, visits: visits.filter { $0.visitAt > date })
+        }
+        let policy: TimelineReloadPolicy = visits.last.map { .after($0.visitAt) } ?? .never
+        completion(Timeline(entries: entries, policy: policy))
     }
 
     // MARK: - Private

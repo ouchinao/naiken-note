@@ -8,6 +8,11 @@ actor SwiftDataPropertyRepository: PropertyRepository {
         return try modelContext.fetch(FetchDescriptor<PropertyRecord>()).map(Property.init(record:))
     }
 
+    func fetchAll(visitedAfter date: Date) throws -> [Property] {
+        let descriptor = FetchDescriptor<PropertyRecord>(predicate: #Predicate { $0.visitedAt > date })
+        return try modelContext.fetch(descriptor).map(Property.init(record:))
+    }
+
     func fetch(id: UUID) throws -> Property? {
         return try modelContext.propertyRecord(id: id).map(Property.init(record:))
     }
