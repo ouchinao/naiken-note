@@ -2,7 +2,7 @@ import Foundation
 
 public struct LibraryPhotoCandidate: Identifiable, Hashable, Sendable {
     public let id: String
-    let takenAt: Date
+    public let takenAt: Date
     let coordinate: GeoCoordinate?
 
     public init(id: String, takenAt: Date, coordinate: GeoCoordinate?) {

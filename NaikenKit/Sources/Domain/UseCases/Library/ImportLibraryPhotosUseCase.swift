@@ -9,13 +9,19 @@ public struct ImportLibraryPhotosUseCase: Sendable {
         self.addPhoto = addPhoto
     }
 
-    public func execute(candidateIDs: [String], propertyID: UUID) async throws -> Int {
-        var importedCount = 0
+    /// 1枚の失敗で残りを止めないのは、圏外で iCloud にしかない写真が混ざっていても、読める写真は取り込み、取り込んだ写真を選び直させないため
+    public func execute(candidateIDs: [String], propertyID: UUID) async -> LibraryImportResult {
+        var importedIDs: [String] = []
+        var failedIDs: [String] = []
         for candidateID in candidateIDs {
-            let data = try await scanner.imageData(for: candidateID)
-            _ = try await addPhoto.execute(propertyID: propertyID, original: data, roomTag: .other)
-            importedCount += 1
+            do {
+                let data = try await scanner.imageData(for: candidateID)
+                _ = try await addPhoto.execute(propertyID: propertyID, original: data, roomTag: .other)
+                importedIDs.append(candidateID)
+            } catch {
+                failedIDs.append(candidateID)
+            }
         }
-        return importedCount
+        return LibraryImportResult(importedIDs: importedIDs, failedIDs: failedIDs)
     }
 }

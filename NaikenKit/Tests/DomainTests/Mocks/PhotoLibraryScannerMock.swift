@@ -8,16 +8,18 @@ final class PhotoLibraryScannerMock: PhotoLibraryScanner, @unchecked Sendable {
     private(set) var loadedIDs: [String] = []
 
     private let lock = NSLock()
-    private let isAuthorized: Bool
+    private let access: PhotoLibraryAccess
     private let stubbedCandidates: [LibraryPhotoCandidate]
+    private let unreadableIDs: Set<String>
 
-    init(isAuthorized: Bool = true, candidates: [LibraryPhotoCandidate] = []) {
-        self.isAuthorized = isAuthorized
+    init(access: PhotoLibraryAccess = .full, candidates: [LibraryPhotoCandidate] = [], unreadableIDs: Set<String> = []) {
+        self.access = access
         stubbedCandidates = candidates
+        self.unreadableIDs = unreadableIDs
     }
 
-    func requestAuthorization() async -> Bool {
-        return isAuthorized
+    func requestAccess() async -> PhotoLibraryAccess {
+        return access
     }
 
     func candidates(takenFrom start: Date, to end: Date) async throws -> [LibraryPhotoCandidate] {
@@ -35,6 +37,9 @@ final class PhotoLibraryScannerMock: PhotoLibraryScanner, @unchecked Sendable {
     func imageData(for id: String) async throws -> Data {
         lock.withLock {
             loadedIDs.append(id)
+        }
+        if unreadableIDs.contains(id) {
+            throw TestFailure.stubbed
         }
         return Data(id.utf8)
     }

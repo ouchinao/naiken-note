@@ -36,6 +36,8 @@ public struct LibraryImportView: View {
             Button("閉じる", role: .cancel) {}
         } message: { notice in
             switch notice {
+            case .partiallyFailed(let count):
+                Text("\(count)枚を取り込めませんでした。iCloud にしかない写真は、通信できる場所でもう一度取り込んでください")
             case .failed(let message):
                 Text(message)
             }
@@ -58,13 +60,34 @@ public struct LibraryImportView: View {
                 Button("設定を開く") { openSettings() }
             }
         case .empty:
-            ContentUnavailableView(
-                "写真が見つかりません",
-                systemImage: "photo.on.rectangle",
-                description: Text("内見日時の前後\(Int(LibraryScanRule.timeWindow / 3_600))時間に撮った写真はありませんでした")
-            )
+            ContentUnavailableView {
+                Label("写真が見つかりません", systemImage: "photo.on.rectangle")
+            } description: {
+                Text("内見日時の前後\(LibraryScanRule.timeWindowHours)時間に撮った写真はありませんでした")
+            } actions: {
+                if viewModel.isAccessLimited {
+                    limitedAccessNote
+                }
+            }
         case .ready:
-            candidateGrid
+            VStack(spacing: 0) {
+                if viewModel.isAccessLimited {
+                    limitedAccessNote
+                        .padding(.horizontal)
+                }
+                candidateGrid
+            }
+        }
+    }
+
+    private var limitedAccessNote: some View {
+        VStack(spacing: Spacing.xSmall) {
+            Text("写真へのアクセスが一部の写真に限られているため、探せる写真も限られます")
+                .font(.footnote)
+                .foregroundStyle(.secondary)
+                .multilineTextAlignment(.center)
+            Button("設定でアクセスを広げる") { openSettings() }
+                .font(.footnote)
         }
     }
 
@@ -75,7 +98,11 @@ public struct LibraryImportView: View {
                     Button {
                         viewModel.toggle(candidate)
                     } label: {
-                        CandidateCell(thumbnail: viewModel.thumbnails[candidate.id], isSelected: viewModel.isSelected(candidate))
+                        CandidateCell(
+                            thumbnail: viewModel.thumbnails[candidate.id],
+                            takenAt: candidate.takenAt,
+                            isSelected: viewModel.isSelected(candidate)
+                        )
                     }
                     .buttonStyle(.plain)
                 }
@@ -105,7 +132,10 @@ public struct LibraryImportView: View {
 }
 
 private struct CandidateCell: View {
+    private static let unselectedOpacity = 0.6
+
     let thumbnail: Data?
+    let takenAt: Date
     let isSelected: Bool
 
     var body: some View {
@@ -121,7 +151,9 @@ private struct CandidateCell: View {
                     .foregroundStyle(isSelected ? Color.brand : Color.white)
                     .padding(Spacing.xSmall)
             }
-            .opacity(isSelected ? 1 : 0.6)
+            .opacity(isSelected ? 1 : Self.unselectedOpacity)
+            .accessibilityElement(children: .ignore)
+            .accessibilityLabel(Text("\(takenAt.formatted(date: .omitted, time: .shortened))に撮った写真"))
             .accessibilityAddTraits(isSelected ? .isSelected : [])
     }
 }
