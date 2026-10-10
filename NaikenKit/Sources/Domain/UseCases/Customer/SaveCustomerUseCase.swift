@@ -1,6 +1,5 @@
 import Foundation
 
-/// 顧客別フォルダを作成・変更する。Proでなければ `Failure.proRequired` を投げる
 public struct SaveCustomerUseCase: Sendable {
     public enum Failure: Error, Equatable {
         case proRequired

@@ -1,6 +1,5 @@
 import Foundation
 
-/// 物件一覧の顧客別フォルダによる絞り込み(Pro)
 public enum CustomerFilter: Hashable, Sendable {
     case all
     case customer(UUID)

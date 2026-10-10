@@ -7,7 +7,6 @@ public struct FetchCustomersUseCase: Sendable {
         self.repository = repository
     }
 
-    /// 名前順に返す
     public func execute() async throws -> [Customer] {
         return try await repository.fetchAll()
     }

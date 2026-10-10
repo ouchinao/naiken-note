@@ -7,7 +7,6 @@ public struct DeleteCustomerUseCase: Sendable {
         self.repository = repository
     }
 
-    /// 顧客を削除する。属していた物件は残り、未分類になる
     public func execute(id: UUID) async throws {
         try await repository.delete(id: id)
     }

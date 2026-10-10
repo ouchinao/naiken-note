@@ -1,7 +1,7 @@
 import Foundation
 @testable import Domain
 
-// テストからは逐次呼ぶだけだが、記録はロックで守ってから @unchecked Sendable にする
+// ロックを省かないのは、@unchecked Sendable でコンパイラによる並行アクセスのチェックを外しているため
 final class CustomerRepositoryMock: CustomerRepository, @unchecked Sendable {
     private(set) var saved: [Customer] = []
     private(set) var deletedIDs: [UUID] = []

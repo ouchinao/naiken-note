@@ -2,7 +2,6 @@ import Domain
 import Foundation
 import Observation
 
-/// Proの顧客別フォルダを管理する
 @MainActor
 @Observable
 public final class CustomersViewModel {

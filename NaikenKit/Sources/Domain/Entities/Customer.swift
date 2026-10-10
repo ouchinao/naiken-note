@@ -1,6 +1,5 @@
 import Foundation
 
-/// Proモードの顧客別フォルダ
 public struct Customer: Identifiable, Hashable, Sendable {
     public let id: UUID
     public var name: String

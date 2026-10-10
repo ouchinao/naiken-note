@@ -22,7 +22,7 @@ public struct PropertyListView: View {
                 Task { await viewModel.load() }
             }
             .onChange(of: entitlementStore.current) { _, entitlement in
-                // Proが切れたらフォルダのメニューが消えるので、絞り込みも外す
+                // 絞り込みを残さないのは、Pro が切れるとフォルダのメニューが消えて、ユーザーが解除できなくなるため
                 if !entitlement.canUseCustomerFolders {
                     viewModel.filter = .all
                 }
