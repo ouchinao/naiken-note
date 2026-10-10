@@ -7,7 +7,7 @@ public struct FetchCloudSyncStatusUseCase: Sendable {
         self.provider = provider
     }
 
-    public func execute() -> CloudSyncStatus {
-        return provider.currentStatus()
+    public func execute() async -> CloudSyncStatus {
+        return await provider.currentStatus()
     }
 }
