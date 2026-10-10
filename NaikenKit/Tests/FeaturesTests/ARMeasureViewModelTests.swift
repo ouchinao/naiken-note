@@ -27,15 +27,40 @@ struct ARMeasureViewModelTests {
         #expect(viewModel.placedPointCount == 2 && viewModel.distanceMillimeters == 1_690)
     }
 
-    @Test("3点目を置くと最初からやり直す")
+    @Test("3点目を置くと、測った線を消してその点から測り直す")
     func thirdPointStartsOver() {
-        let viewModel = ARMeasureViewModel(measuring: ARMeasuringStub())
+        let measuring = ARMeasuringStub()
+        let viewModel = ARMeasureViewModel(measuring: measuring)
 
         for pointX in [40.0, 360.0, 200.0] {
             viewModel.placePoint(at: CGPoint(x: pointX, y: 400), in: viewSize)
         }
 
+        #expect(measuring.resetCount == 1 && measuring.placedPointCount == 1)
         #expect(viewModel.markers == [CGPoint(x: 200, y: 400)] && viewModel.distanceMillimeters == nil)
+    }
+
+    @Test("2点そろうまで線を引かない")
+    func drawsLineOnlyWithTwoPoints() {
+        let viewModel = ARMeasureViewModel(measuring: ARMeasuringStub())
+        viewModel.placePoint(at: CGPoint(x: 40, y: 400), in: viewSize)
+        let lineWithOnePoint = viewModel.measuredLine
+
+        viewModel.placePoint(at: CGPoint(x: 360, y: 400), in: viewSize)
+
+        #expect(lineWithOnePoint == nil)
+        #expect(viewModel.measuredLine?.start == CGPoint(x: 40, y: 400) && viewModel.measuredLine?.end == CGPoint(x: 360, y: 400))
+    }
+
+    @Test("カメラの使用が許可されていなければ、面が見つからないのではなく許可がないと知らせる")
+    func reportsCameraDenied() {
+        let measuring = ARMeasuringStub()
+        let viewModel = ARMeasureViewModel(measuring: measuring)
+        viewModel.start()
+
+        measuring.fail(with: .cameraDenied)
+
+        #expect(viewModel.failure == .cameraDenied)
     }
 
     @Test("面が見つからなければ点を置かずに知らせる")

@@ -38,10 +38,10 @@ public struct ARMeasureView: View {
 
     private var markerLayer: some View {
         ZStack {
-            if viewModel.markers.count == 2 {
+            if let line = viewModel.measuredLine {
                 Path { path in
-                    path.move(to: viewModel.markers[0])
-                    path.addLine(to: viewModel.markers[1])
+                    path.move(to: line.start)
+                    path.addLine(to: line.end)
                 }
                 .stroke(Color.brand, lineWidth: Self.lineWidth)
             }
@@ -78,6 +78,14 @@ public struct ARMeasureView: View {
     }
 
     private var guideMessage: LocalizedStringKey {
+        switch viewModel.failure {
+        case .cameraDenied:
+            return "カメラの使用が許可されていません。設定アプリで許可するか、寸法を手で入力してください"
+        case .sessionFailed:
+            return "ARを始められませんでした。寸法を手で入力してください"
+        case nil:
+            break
+        }
         if viewModel.isSurfaceMissing {
             return "面が見つかりません。カメラを少し動かしてから試してください"
         }
@@ -90,6 +98,9 @@ public struct ARMeasureView: View {
     private var controls: some View {
         HStack(spacing: Spacing.medium) {
             Button("キャンセル") { onFinish(nil) }
+            if viewModel.failure == .cameraDenied, let settings = URL(string: UIApplication.openSettingsURLString) {
+                Link("設定を開く", destination: settings)
+            }
             Button("やり直す") { viewModel.reset() }
             Button("この値を使う") { onFinish(viewModel.distanceMillimeters) }
                 .buttonStyle(.borderedProminent)
