@@ -42,7 +42,7 @@ struct ExportComparisonUseCaseTests {
     }
 
     @Test("描画に失敗すると renderingFailed で失敗する")
-    func renderingFailure() async {
+    func failsWhenRenderingFails() async {
         let useCase = ExportComparisonUseCase(
             entitlement: EntitlementProviderStub(current: .unlocked),
             exporter: ComparisonExporterMock(result: nil)

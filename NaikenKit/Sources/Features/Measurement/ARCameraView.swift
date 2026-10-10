@@ -10,7 +10,7 @@ struct ARCameraView: UIViewRepresentable {
         let view = ARSCNView(frame: .zero)
         view.session = session
         view.automaticallyUpdatesLighting = true
-        view.debugOptions = [ARSCNDebugOptions.showFeaturePoints]
+        view.debugOptions = [.showFeaturePoints]
         return view
     }
 

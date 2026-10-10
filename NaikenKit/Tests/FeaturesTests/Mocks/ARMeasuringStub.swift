@@ -4,11 +4,13 @@ import Foundation
 @MainActor
 final class ARMeasuringStub: ARMeasuring {
     let isLiDARAvailable = false
+    var onFailure: (@MainActor (ARMeasurement.Failure) -> Void)?
     private(set) var placedPointCount = 0
     private(set) var receivedPoints: [CGPoint] = []
+    private(set) var resetCount = 0
 
     var distanceMillimeters: Int? {
-        return placedPointCount == 2 ? distance : nil
+        return placedPointCount == ARMeasurement.pointCount ? distance : nil
     }
 
     private let isSurfaceFound: Bool
@@ -28,11 +30,16 @@ final class ARMeasuringStub: ARMeasuring {
             return false
         }
         receivedPoints.append(CGPoint(x: normalizedX, y: normalizedY))
-        placedPointCount = placedPointCount == 2 ? 1 : placedPointCount + 1
+        placedPointCount += 1
         return true
     }
 
     func reset() {
         placedPointCount = 0
+        resetCount += 1
+    }
+
+    func fail(with failure: ARMeasurement.Failure) {
+        onFailure?(failure)
     }
 }

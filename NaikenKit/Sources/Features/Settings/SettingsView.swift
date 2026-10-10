@@ -5,7 +5,6 @@ import SwiftUI
 public struct SettingsView: View {
     @State private var viewModel: SettingsViewModel
     @Environment(Router.self) private var router
-    @Environment(EntitlementStore.self) private var entitlementStore
 
     public init(viewModel: SettingsViewModel) {
         _viewModel = State(initialValue: viewModel)
@@ -28,7 +27,7 @@ public struct SettingsView: View {
             }
         }
         .navigationTitle("設定")
-        .onAppear { viewModel.load() }
+        .task { await viewModel.load() }
         .alert("確認", isPresented: $viewModel.isNoticePresented, presenting: viewModel.notice) { _ in
             Button("閉じる", role: .cancel) {}
         } message: { notice in
@@ -46,7 +45,7 @@ public struct SettingsView: View {
     private var purchaseSection: some View {
         Section("購入") {
             LabeledContent("プラン", value: planText)
-            if entitlementStore.current == .free {
+            if viewModel.showsUnlockButton {
                 Button("機能を解除する") { router.present(.paywall) }
             }
             Button("購入を復元") {
@@ -62,11 +61,15 @@ public struct SettingsView: View {
             return String(localized: "有効", bundle: .module)
         case .signedOut:
             return String(localized: "iCloudにサインインしていません", bundle: .module)
+        case .unavailable:
+            return String(localized: "iCloudを利用できません", bundle: .module)
+        case nil:
+            return String(localized: "確認中", bundle: .module)
         }
     }
 
     private var planText: String {
-        switch entitlementStore.current {
+        switch viewModel.entitlement {
         case .free:
             return String(localized: "無料版", bundle: .module)
         case .unlocked:

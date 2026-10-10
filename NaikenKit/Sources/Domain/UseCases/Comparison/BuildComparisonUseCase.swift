@@ -1,7 +1,7 @@
 import Foundation
 
 public struct BuildComparisonUseCase: Sendable {
-    public enum Failure: Error, Equatable {
+    enum Failure: Error, Equatable {
         case invalidSelection(count: Int)
     }
 

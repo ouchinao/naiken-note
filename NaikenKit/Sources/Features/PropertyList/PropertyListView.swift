@@ -80,8 +80,8 @@ public struct PropertyListView: View {
             if viewModel.isSelecting {
                 Button("キャンセル") { viewModel.finishSelecting() }
             } else {
-                Button("比較") { viewModel.isSelecting = true }
-                    .disabled(viewModel.properties.count < Limits.comparisonMinimumCount)
+                Button("比較") { viewModel.startSelecting() }
+                    .disabled(!viewModel.canStartSelecting)
                 Button {
                     Task { await startAdding() }
                 } label: {

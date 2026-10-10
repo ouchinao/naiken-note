@@ -47,6 +47,8 @@ struct PhotosTabView: View {
             Button("閉じる", role: .cancel) {}
         } message: { notice in
             switch notice {
+            case .unreadable(let count):
+                Text("\(count)枚の写真を読み込めませんでした。通信できる場所でもう一度お試しください")
             case .failed(let message):
                 Text(message)
             }
@@ -79,13 +81,13 @@ struct PhotosTabView: View {
         ScrollView(.horizontal, showsIndicators: false) {
             HStack(spacing: Spacing.small) {
                 Button {
-                    viewModel.selectedTag = nil
+                    viewModel.selectTag(nil)
                 } label: {
                     TagChip(title: String(localized: "すべて", bundle: .module), isSelected: viewModel.selectedTag == nil)
                 }
                 ForEach(Photo.RoomTag.allCases, id: \.self) { tag in
                     Button {
-                        viewModel.selectedTag = tag
+                        viewModel.selectTag(tag)
                     } label: {
                         TagChip(title: tag.title, isSelected: viewModel.selectedTag == tag)
                     }
@@ -103,12 +105,16 @@ struct PhotosTabView: View {
         } else {
             LazyVGrid(columns: [GridItem(.adaptive(minimum: Self.cellMinimumWidth), spacing: Spacing.small)], spacing: Spacing.small) {
                 ForEach(photos) { photo in
-                    PhotoCell(
-                        photo: photo,
-                        thumbnail: viewModel.thumbnails[photo.id],
-                        isRepresentative: photo == property.representativePhoto
-                    )
-                    .onTapGesture { router.presentFullScreen(.photo(id: photo.id)) }
+                    Button {
+                        router.presentFullScreen(.photo(id: photo.id))
+                    } label: {
+                        PhotoCell(
+                            photo: photo,
+                            thumbnail: viewModel.thumbnails[photo.id],
+                            isRepresentative: photo == property.representativePhoto
+                        )
+                    }
+                    .buttonStyle(.plain)
                     .contextMenu { contextMenu(for: photo) }
                 }
             }
@@ -159,6 +165,7 @@ struct PhotosTabView: View {
         if items.isEmpty {
             return
         }
+        viewModel.beginImport()
         var images: [Data] = []
         for item in items {
             if let data = try? await item.loadTransferable(type: Data.self) {
@@ -166,7 +173,7 @@ struct PhotosTabView: View {
             }
         }
         pickerItems = []
-        await viewModel.importPhotos(images, into: property.id)
+        await viewModel.importPhotos(images, unreadableCount: items.count - images.count, into: property.id)
     }
 }
 
@@ -192,7 +199,20 @@ private struct PhotoCell: View {
             }
             .padding(Spacing.xSmall)
         }
-        .accessibilityElement(children: .combine)
-        .accessibilityLabel(photo.caption.isEmpty ? photo.roomTag.title : "\(photo.roomTag.title) \(photo.caption)")
+        .accessibilityElement(children: .ignore)
+        .accessibilityLabel(accessibilityTitle)
+    }
+
+    // MARK: - Private
+
+    private var accessibilityTitle: String {
+        var parts = [photo.roomTag.title]
+        if !photo.caption.isEmpty {
+            parts.append(photo.caption)
+        }
+        if isRepresentative {
+            parts.append(String(localized: "代表写真", bundle: .module))
+        }
+        return parts.joined(separator: " ")
     }
 }

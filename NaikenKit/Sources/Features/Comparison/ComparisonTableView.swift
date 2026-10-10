@@ -4,9 +4,10 @@ import SwiftUI
 
 /// 書き出し用に別の View を作らないのは、画面で見た表と送った画像の中身がずれないようにするため
 struct ComparisonTableView: View {
-    private static let labelWidth: CGFloat = 80
-    private static let columnWidth: CGFloat = 150
     private static let photoHeight: CGFloat = 110
+
+    @ScaledMetric(relativeTo: .subheadline) private var labelWidth: CGFloat = 80
+    @ScaledMetric(relativeTo: .headline) private var columnWidth: CGFloat = 150
 
     private let entries: [ComparisonEntry]
     private let showsBranding: Bool
@@ -21,18 +22,18 @@ struct ComparisonTableView: View {
             Grid(alignment: .leading, horizontalSpacing: Spacing.medium, verticalSpacing: Spacing.small) {
                 GridRow {
                     Color.clear
-                        .frame(width: Self.labelWidth, height: 1)
+                        .frame(width: labelWidth, height: 1)
                     ForEach(entries) { entry in
                         Text(entry.property.name)
                             .font(.headline)
                             .lineLimit(2)
-                            .frame(width: Self.columnWidth, alignment: .leading)
+                            .frame(width: columnWidth, alignment: .leading)
                     }
                 }
                 Divider()
                 row("写真") { entry in
                     Color.clear
-                        .frame(width: Self.columnWidth, height: Self.photoHeight)
+                        .frame(width: columnWidth, height: Self.photoHeight)
                         .overlay {
                             ThumbnailView(data: entry.representativeImage)
                         }
@@ -70,10 +71,10 @@ struct ComparisonTableView: View {
             Text(title)
                 .font(.subheadline)
                 .foregroundStyle(.secondary)
-                .frame(width: Self.labelWidth, alignment: .leading)
+                .frame(width: labelWidth, alignment: .leading)
             ForEach(entries) { entry in
                 content(entry)
-                    .frame(width: Self.columnWidth, alignment: .leading)
+                    .frame(width: columnWidth, alignment: .leading)
             }
         }
     }

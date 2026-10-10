@@ -5,14 +5,14 @@ import Observation
 @MainActor
 @Observable
 public final class SettingsViewModel {
-    enum Notice {
+    enum Notice: Equatable {
         case restored
         case failed(message: String)
     }
 
     // MARK: - State
 
-    private(set) var cloudStatus: CloudSyncStatus = .enabled
+    private(set) var cloudStatus: CloudSyncStatus?
     private(set) var isRestoring = false
     private(set) var notice: Notice?
 
@@ -27,36 +27,47 @@ public final class SettingsViewModel {
         }
     }
 
+    var entitlement: Entitlement {
+        return entitlementState.current
+    }
+
+    var showsUnlockButton: Bool {
+        return entitlementState.current == .free
+    }
+
     // MARK: - Init
 
     private let fetchCloudSyncStatus: FetchCloudSyncStatusUseCase
     private let restorePurchases: RestorePurchasesUseCase
-    private let entitlementStore: EntitlementStore
+    private let entitlementState: any EntitlementState
 
     public init(
         fetchCloudSyncStatus: FetchCloudSyncStatusUseCase,
         restorePurchases: RestorePurchasesUseCase,
-        entitlementStore: EntitlementStore
+        entitlementState: any EntitlementState
     ) {
         self.fetchCloudSyncStatus = fetchCloudSyncStatus
         self.restorePurchases = restorePurchases
-        self.entitlementStore = entitlementStore
+        self.entitlementState = entitlementState
     }
 
     // MARK: - Actions
 
-    func load() {
-        cloudStatus = fetchCloudSyncStatus.execute()
+    func load() async {
+        cloudStatus = await fetchCloudSyncStatus.execute()
     }
 
     func restore() async {
+        guard !isRestoring else {
+            return
+        }
         isRestoring = true
         defer {
             isRestoring = false
         }
         do {
             try await restorePurchases.execute()
-            await entitlementStore.refresh()
+            await entitlementState.refresh()
             notice = .restored
         } catch {
             notice = .failed(message: error.localizedDescription)

@@ -5,6 +5,7 @@ import UIKit
 
 public struct ComparisonView: View {
     @State private var viewModel: ComparisonViewModel
+    @State private var isSharing = false
     @Environment(Router.self) private var router
     @Environment(\.requestReview) private var requestReview
 
@@ -56,13 +57,19 @@ public struct ComparisonView: View {
     private var shareBar: some View {
         Group {
             if let data = viewModel.exportedImage, let image = UIImage(data: data) {
-                ShareLink(
-                    item: Image(uiImage: image),
-                    preview: SharePreview("比較表", image: Image(uiImage: image))
-                ) {
+                Button {
+                    isSharing = true
+                } label: {
                     Label("画像を送る", systemImage: "square.and.arrow.up")
                 }
-                .simultaneousGesture(TapGesture().onEnded { viewModel.recordShare() })
+                .sheet(isPresented: $isSharing) {
+                    ActivityView(items: [image]) { completed in
+                        if completed {
+                            viewModel.recordShare()
+                        }
+                    }
+                    .presentationDetents([.medium, .large])
+                }
             } else {
                 Button {
                     Task { await viewModel.export() }

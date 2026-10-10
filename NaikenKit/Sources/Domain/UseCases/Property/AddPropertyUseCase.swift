@@ -14,7 +14,7 @@ public struct AddPropertyUseCase: Sendable {
     }
 
     public func checkLimit() async throws {
-        if let limit = await entitlement.current.propertyLimit {
+        if let limit = await entitlement.currentEntitlement().propertyLimit {
             let count = try await repository.count()
             if count >= limit {
                 throw Failure.limitReached(limit: limit)

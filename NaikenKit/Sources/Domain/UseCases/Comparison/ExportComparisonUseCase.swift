@@ -15,7 +15,7 @@ public struct ExportComparisonUseCase: Sendable {
     }
 
     public func execute(_ entries: [ComparisonEntry]) async throws -> Data {
-        let current = await entitlement.current
+        let current = await entitlement.currentEntitlement()
         if !current.canExportComparison {
             throw Failure.locked
         }

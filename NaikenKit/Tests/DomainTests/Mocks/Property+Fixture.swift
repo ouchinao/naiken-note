@@ -6,6 +6,7 @@ extension Property {
         name: String = "テスト物件",
         visitedAt: Date = Date(timeIntervalSince1970: 1_800_000_000),
         photos: [Photo] = [],
+        measurements: [Measurement] = [],
         checkResults: [CheckResult] = []
     ) -> Property {
         return Property(
@@ -13,6 +14,7 @@ extension Property {
             name: name,
             visitedAt: visitedAt,
             photos: photos,
+            measurements: measurements,
             checkResults: checkResults,
             createdAt: Date(timeIntervalSince1970: 1_800_000_000)
         )
