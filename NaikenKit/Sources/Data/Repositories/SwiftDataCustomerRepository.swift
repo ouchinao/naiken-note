@@ -5,10 +5,7 @@ import SwiftData
 @ModelActor
 actor SwiftDataCustomerRepository: CustomerRepository {
     func fetchAll() throws -> [Customer] {
-        let descriptor = FetchDescriptor<CustomerRecord>(
-            sortBy: [SortDescriptor(\.name, comparator: .localizedStandard)]
-        )
-        return try modelContext.fetch(descriptor).map(Customer.init(record:))
+        return try modelContext.fetch(FetchDescriptor<CustomerRecord>()).map(Customer.init(record:))
     }
 
     func save(_ customer: Customer) throws {
@@ -18,8 +15,7 @@ actor SwiftDataCustomerRepository: CustomerRepository {
         )
         modelContext.insert(record)
         record.apply(customer)
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 
     func delete(id: UUID) throws {
@@ -27,7 +23,6 @@ actor SwiftDataCustomerRepository: CustomerRepository {
             return
         }
         modelContext.delete(record)
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 }

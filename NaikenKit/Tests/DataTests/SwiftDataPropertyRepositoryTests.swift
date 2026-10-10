@@ -14,6 +14,8 @@ struct SwiftDataPropertyRepositoryTests {
     @Test("保存した物件をすべての項目そのままで読み出せる")
     func roundTripsAllFields() async throws {
         let repository = SwiftDataPropertyRepository(modelContainer: container)
+        let customer = Customer(id: UUID(), name: "山田様", createdAt: Date())
+        try await SwiftDataCustomerRepository(modelContainer: container).save(customer)
         let property = Property(
             id: UUID(),
             name: "A棟201",
@@ -24,6 +26,7 @@ struct SwiftDataPropertyRepositoryTests {
             walkMinutes: 6,
             visitedAt: Date(timeIntervalSince1970: 1_800_000_000),
             memo: "角部屋",
+            customerID: customer.id,
             createdAt: Date(timeIntervalSince1970: 1_799_000_000)
         )
 

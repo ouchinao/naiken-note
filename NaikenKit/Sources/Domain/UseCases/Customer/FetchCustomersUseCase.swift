@@ -8,6 +8,6 @@ public struct FetchCustomersUseCase: Sendable {
     }
 
     public func execute() async throws -> [Customer] {
-        return try await repository.fetchAll()
+        return try await repository.fetchAll().sorted { $0.name.localizedStandardCompare($1.name) == .orderedAscending }
     }
 }

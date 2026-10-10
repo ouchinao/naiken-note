@@ -11,15 +11,14 @@ struct SwiftDataCustomerRepositoryTests {
         container = try ModelContainerFactory.make(inMemory: true)
     }
 
-    @Test("顧客は名前の順に返す")
-    func fetchAllSortsByName() async throws {
+    @Test("保存したお客様を、メモや登録日時もそのまま読み出せる")
+    func roundTripsCustomerFields() async throws {
         let repository = SwiftDataCustomerRepository(modelContainer: container)
-        for name in ["たなか", "あいかわ", "さとう"] {
-            try await repository.save(Customer(id: UUID(), name: name, createdAt: Date()))
-        }
+        let customer = Customer(id: UUID(), name: "山田様", memo: "4月から転勤", createdAt: Date(timeIntervalSince1970: 1_800_000_000))
 
-        let names = try await repository.fetchAll().map(\.name)
+        try await repository.save(customer)
 
-        #expect(names == ["あいかわ", "さとう", "たなか"])
+        let customers = try await repository.fetchAll()
+        #expect(customers == [customer])
     }
 }
