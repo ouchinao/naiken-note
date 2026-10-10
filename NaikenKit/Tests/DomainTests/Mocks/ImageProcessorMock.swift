@@ -1,7 +1,7 @@
 import Foundation
 @testable import Domain
 
-// downsized と thumbnail は async let で並行に呼ばれるので、記録はロックで守る
+// ロックを省かないのは、downsized と thumbnail が async let で並行に呼ばれるため
 final class ImageProcessorMock: ImageProcessor, @unchecked Sendable {
     private(set) var downsizedSizes: [Int] = []
     private(set) var thumbnailSizes: [Int] = []

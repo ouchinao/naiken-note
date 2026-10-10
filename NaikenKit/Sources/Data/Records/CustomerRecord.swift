@@ -1,15 +1,16 @@
 import Foundation
 import SwiftData
 
-/// Pro(2.0)の顧客別フォルダ。リリース後にスキーマを移行しなくて済むよう、1.0 のスキーマから含めておく
+/// 使うのは 2.0 の顧客別フォルダだが、1.0 のスキーマから含めておくのは、公開後のスキーマ移行を避けるため
 @Model
 final class CustomerRecord {
+    // @Model はプロパティを計算プロパティに置き換えるので、初期値があっても型は省略できない
     var id: UUID = UUID()
     var name: String = ""
     var memo: String = ""
     var createdAt: Date = Date()
 
-    /// 顧客を消しても物件は残し、未分類に戻す
+    /// cascade にしないのは、顧客を消しても物件の記録は残すため
     @Relationship(deleteRule: .nullify, inverse: \PropertyRecord.customer)
     var properties: [PropertyRecord]? = []
 

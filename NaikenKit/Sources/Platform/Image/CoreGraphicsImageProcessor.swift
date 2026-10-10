@@ -3,7 +3,7 @@ import Foundation
 import ImageIO
 import UniformTypeIdentifiers
 
-/// `CGImageSourceCreateThumbnailAtIndex` で縮小するので、元画像をメモリに全展開しない
+/// `UIImage` に読み込んでから縮小しないのは、元画像をメモリに全展開してしまうため
 public struct CoreGraphicsImageProcessor: ImageProcessor {
     enum Failure: Error {
         case unreadableImage
@@ -36,7 +36,6 @@ public struct CoreGraphicsImageProcessor: ImageProcessor {
 
     // MARK: - Private
 
-    /// 長辺を `maxPixelSize` 以下にしたJPEGを作る
     private static func resizedJPEG(from data: Data, maxPixelSize: Int) throws -> Data {
         guard let source = CGImageSourceCreateWithData(data as CFData, nil) else {
             throw Failure.unreadableImage

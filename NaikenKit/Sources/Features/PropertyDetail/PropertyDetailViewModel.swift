@@ -62,7 +62,6 @@ public final class PropertyDetailViewModel {
         }
     }
 
-    /// 保存やiCloudからの同期でストアが変わるたびに読み込み直す。画面を離れると止まる
     func observeChanges() async {
         for await _ in storeChanges.changes {
             try? await Task.sleep(for: StoreChangeDebounce.interval)

@@ -40,6 +40,22 @@ struct CoreGraphicsImageProcessorTests {
         #expect(processor.captureDate(of: original) == Date(timeIntervalSince1970: 1_790_832_600))
     }
 
+    @Test("時差のない撮影日時は端末のタイムゾーンの時刻として読む")
+    func readsExifDateWithoutOffsetInCurrentTimeZone() throws {
+        let original = try JPEGFixture.make(width: 64, height: 64, dateTimeOriginal: "2026:10:01 14:30:00")
+        let expected = DateComponents(
+            calendar: Calendar(identifier: .gregorian),
+            timeZone: .current,
+            year: 2026,
+            month: 10,
+            day: 1,
+            hour: 14,
+            minute: 30
+        ).date
+
+        #expect(processor.captureDate(of: original) == expected)
+    }
+
     @Test("EXIFに撮影日時がなければnil")
     func returnsNilWithoutExifDate() throws {
         let original = try JPEGFixture.make(width: 64, height: 64)

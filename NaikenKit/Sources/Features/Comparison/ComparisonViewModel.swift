@@ -56,7 +56,6 @@ public final class ComparisonViewModel {
         }
     }
 
-    /// 比較表を画像にする。未解錠なら `Notice.locked` を出す
     func export() async {
         isExporting = true
         defer {

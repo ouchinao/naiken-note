@@ -2,9 +2,8 @@ import Domain
 import SwiftUI
 import UIKit
 
-/// 比較表をPNG画像にする。SwiftUIのViewを描くので、Platform層ではなくFeatures層に置く
+/// Platform ではなくここに置くのは、SwiftUI の View を描くため
 public struct ImageRendererComparisonExporter: ComparisonExporter {
-    /// Retina相当の解像度で書き出す
     private static let scale: CGFloat = 3
 
     public init() {}

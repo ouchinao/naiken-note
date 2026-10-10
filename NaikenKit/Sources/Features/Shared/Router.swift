@@ -1,7 +1,7 @@
 import Foundation
 import Observation
 
-/// 画面遷移を一元管理する。Viewは遷移先を名前で指定するだけで、どのViewを作るかはApp層が決める
+/// 遷移先を View ではなく名前で持つのは、Features が遷移先の画面の依存を組み立てずに済むようにするため
 @MainActor
 @Observable
 public final class Router {

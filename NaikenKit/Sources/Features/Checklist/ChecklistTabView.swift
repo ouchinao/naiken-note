@@ -2,7 +2,6 @@ import DesignSystem
 import Domain
 import SwiftUI
 
-/// 定型チェックリスト。物件詳細の中で完結し、別画面にはしない
 struct ChecklistTabView: View {
     @Bindable private var viewModel: ChecklistTabViewModel
     private let property: Property

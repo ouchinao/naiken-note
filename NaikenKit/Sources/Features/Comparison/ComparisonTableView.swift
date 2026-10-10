@@ -2,7 +2,7 @@ import DesignSystem
 import Domain
 import SwiftUI
 
-/// 比較表。画面表示と画像の書き出しで同じViewを使う。列が物件、行が項目
+/// 書き出し用に別の View を作らないのは、画面で見た表と送った画像の中身がずれないようにするため
 struct ComparisonTableView: View {
     private static let labelWidth: CGFloat = 80
     private static let columnWidth: CGFloat = 150
@@ -11,7 +11,6 @@ struct ComparisonTableView: View {
     private let entries: [ComparisonEntry]
     private let showsBranding: Bool
 
-    /// `showsBranding` がtrueなら右下にアプリ名を入れる。書き出す画像だけに使う
     init(entries: [ComparisonEntry], showsBranding: Bool) {
         self.entries = entries
         self.showsBranding = showsBranding

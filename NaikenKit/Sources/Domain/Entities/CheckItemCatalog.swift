@@ -1,6 +1,6 @@
 import Foundation
 
-/// アプリ側で定義する定型チェック項目。キーは保存済みの `CheckResult.itemKey` と対応するので変更しない
+/// キーは書き換えないこと。保存済みの `CheckResult.itemKey` との対応が切れる
 public enum CheckItemCatalog {
     public static let all = [
         CheckItem(id: "sunlight", title: String(localized: "日当たり", bundle: .module), category: .environment),

@@ -4,7 +4,7 @@ import SwiftData
 public enum ModelContainerFactory {
     private static let cloudKitContainerID = "iCloud.com.example.naikennote"
 
-    /// `inMemory: true` はテストとSwiftUIプレビュー用。CloudKitを切り、ディスクにも書かない
+    /// メモリ上のストアで CloudKit を切るのは、テストが iCloud のアカウントや entitlements に左右されないようにするため
     public static func make(inMemory: Bool = false) throws -> ModelContainer {
         let schema = Schema(versionedSchema: SchemaV1.self)
         let configuration = ModelConfiguration(

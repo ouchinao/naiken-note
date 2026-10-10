@@ -2,7 +2,6 @@ import DesignSystem
 import Domain
 import SwiftUI
 
-/// 物件詳細。「写真」「採寸」「チェック」の3タブを持ち、撮影・取り込み・採寸入力はここから開く
 public struct PropertyDetailView: View {
     private enum Tab: Hashable, CaseIterable {
         case photos

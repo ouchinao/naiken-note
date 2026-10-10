@@ -1,7 +1,6 @@
 import Domain
 import Foundation
 
-/// 固定のデータを返す
 struct ComparisonExporterStub: ComparisonExporter {
     let result: Data?
 

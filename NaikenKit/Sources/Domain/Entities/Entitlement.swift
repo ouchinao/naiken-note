@@ -5,8 +5,6 @@ public enum Entitlement: Sendable {
     case unlocked
     case pro
 
-    /// 有効な Product ID の集合から購入状態を決める。
-    /// Proが有効ならpro、そうでなければunlockがあればunlocked、なければfree
     public init(activeProductIDs: Set<String>) {
         if activeProductIDs.contains(ProductID.proMonthly) {
             self = .pro

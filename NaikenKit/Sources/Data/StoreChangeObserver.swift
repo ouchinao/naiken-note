@@ -2,7 +2,7 @@ import CoreData
 import Domain
 import Foundation
 
-/// 端末内の保存と、CloudKitから届いた変更(`NSPersistentStoreRemoteChange`)をまとめて流す
+/// `NSPersistentStoreRemoteChange` だけを見ないのは、端末内の保存ではこの通知が届かないため
 public final class StoreChangeObserver: StoreChangeObserving {
     private static let localChangeNotification = Notification.Name("NaikenNoteStoreDidChangeLocally")
 
@@ -25,7 +25,6 @@ public final class StoreChangeObserver: StoreChangeObserving {
         }
     }
 
-    /// Repository が保存したあとに呼ぶ
     static func postLocalChange() {
         NotificationCenter.default.post(name: localChangeNotification, object: nil)
     }

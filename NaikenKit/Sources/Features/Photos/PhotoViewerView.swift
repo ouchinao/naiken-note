@@ -2,7 +2,6 @@ import DesignSystem
 import SwiftUI
 import UIKit
 
-/// 写真を全画面で表示する。ピンチで拡大できる
 public struct PhotoViewerView: View {
     private static let minimumScale: CGFloat = 1
     private static let maximumScale: CGFloat = 4

@@ -149,7 +149,7 @@ struct PhotosTabView: View {
         Task { await viewModel.changeCaption(of: captionTarget, to: caption) }
     }
 
-    /// 選んだ写真を `Data` にしてから ViewModel に渡す。写真ライブラリの権限は要らない
+    /// PhotoKit で読まずに `PhotosPicker` の `Data` を使うのは、写真ライブラリの権限を求めずに済むため
     private func importPicked(_ items: [PhotosPickerItem]) async {
         if items.isEmpty {
             return

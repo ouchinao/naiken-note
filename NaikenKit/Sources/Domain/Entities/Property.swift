@@ -47,12 +47,10 @@ public struct Property: Identifiable, Hashable, Sendable {
 }
 
 extension Property {
-    /// 比較表やリストで使う代表写真。並び順の先頭を代表とする
     public var representativePhoto: Photo? {
         return photos.min { $0.sortOrder < $1.sortOrder }
     }
 
-    /// チェックリストで「○」を付けた項目の数
     public var goodCount: Int {
         return checkResults.filter { $0.rating == .good }.count
     }

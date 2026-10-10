@@ -4,7 +4,6 @@ import SwiftData
 import Testing
 @testable import Data
 
-/// 採寸メモとチェック結果のRepository
 struct SwiftDataChildRepositoryTests {
     private let container: ModelContainer
     private let property = Property(id: UUID(), name: "子レコードの物件", visitedAt: Date(), createdAt: Date())

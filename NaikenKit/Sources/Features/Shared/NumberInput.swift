@@ -1,8 +1,6 @@
 import Foundation
 
-/// 数値入力欄の文字列を数値にする。空欄は「値なし」として受け付け、数字でなければnilを返す
 enum NumberInput {
-    /// 入力欄の値。`value` がnilなら空欄
     struct Parsed<Value> {
         let value: Value?
     }
@@ -38,7 +36,6 @@ enum NumberInput {
 
     // MARK: - Private
 
-    /// 前後の空白と桁区切りのカンマを除き、全角数字を半角にする
     private static func normalize(_ text: String) -> String {
         let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: "")
         return trimmed.applyingTransform(.fullwidthToHalfwidth, reverse: false) ?? trimmed

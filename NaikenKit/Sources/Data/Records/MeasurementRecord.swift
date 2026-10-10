@@ -3,6 +3,7 @@ import SwiftData
 
 @Model
 final class MeasurementRecord {
+    // @Model はプロパティを計算プロパティに置き換えるので、初期値があっても型は省略できない
     var id: UUID = UUID()
     var label: String = ""
     var valueMillimeters: Int = 0

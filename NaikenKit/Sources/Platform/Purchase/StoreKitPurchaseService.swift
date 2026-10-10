@@ -2,7 +2,7 @@ import Domain
 import Foundation
 import StoreKit
 
-/// StoreKitの `Product` や `Transaction` はこの型の外に出さず、Product ID の集合だけを返す
+/// StoreKit の `Product` や `Transaction` を返さないのは、StoreKit の型を Domain に持ち込まないため
 public final class StoreKitPurchaseService: PurchaseService {
     enum Failure: Error {
         case productNotFound(String)

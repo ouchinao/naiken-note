@@ -1,11 +1,8 @@
 import Foundation
 
-/// 保存する画像の仕様
 public enum ImageSpec {
-    /// 保存時に縮小する長辺のピクセル数
+    /// 原寸で保存しないのは、1物件に50枚撮ってもユーザーのiCloud容量を圧迫しないようにするため
     public static let maxPixelSize = 2_048
-    /// サムネイルの長辺のピクセル数
     static let thumbnailMaxPixelSize = 320
-    /// JPEGの圧縮品質
     public static let jpegQuality = 0.8
 }

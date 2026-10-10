@@ -1,7 +1,6 @@
 import Domain
 import Foundation
 
-/// 画像を持たない写真Repository
 struct PhotoRepositoryStub: PhotoRepository {
     func save(_: Photo, imageData _: Data, thumbnailData _: Data, propertyID _: UUID) async throws {}
 

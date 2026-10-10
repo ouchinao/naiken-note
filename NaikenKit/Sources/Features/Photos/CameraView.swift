@@ -1,7 +1,7 @@
 import SwiftUI
 import UIKit
 
-/// `UIImagePickerController` のカメラをラップし、撮った写真をJPEGの `Data` で返す
+/// AVCaptureSession でカメラを作り込まないのは、まず標準のカメラで足りるかを確かめるため
 struct CameraView: UIViewControllerRepresentable {
     private static let originalQuality: CGFloat = 0.9
 

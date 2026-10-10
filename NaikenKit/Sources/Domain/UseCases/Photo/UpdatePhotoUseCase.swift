@@ -7,7 +7,6 @@ public struct UpdatePhotoUseCase: Sendable {
         self.repository = repository
     }
 
-    /// 部屋タグ・キャプションの変更を保存する
     public func execute(_ photo: Photo) async throws {
         try await repository.update(photo)
     }
