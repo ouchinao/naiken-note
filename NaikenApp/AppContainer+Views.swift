@@ -30,6 +30,8 @@ extension AppContainer {
                 viewModel: makeMeasurementEditorViewModel(propertyID: propertyID, measurementID: id),
                 arMeasure: makeARMeasureLauncher()
             )
+        case .libraryImport(let propertyID):
+            LibraryImportView(viewModel: makeLibraryImportViewModel(propertyID: propertyID))
         case .paywall:
             PaywallView(viewModel: makePaywallViewModel())
         }

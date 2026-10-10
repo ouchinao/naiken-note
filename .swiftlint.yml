@@ -53,7 +53,7 @@ custom_rules:
   platform_imports:
     name: "Platform の import"
     included: 'NaikenKit/Sources/Platform/.+\.swift$'
-    regex: '^(?:@\w+ +)*import +(?!(?:Foundation|Domain|ImageIO|UniformTypeIdentifiers|StoreKit|ARKit)\b)\w+'
+    regex: '^(?:@\w+ +)*import +(?!(?:Foundation|Domain|ImageIO|UniformTypeIdentifiers|StoreKit|ARKit|Photos|CoreLocation)\b)\w+'
     message: "Platform は画面を持たないOS機能だけを扱う。SwiftUI・UIKit・SwiftData は import しない"
     severity: error
   design_system_imports:

@@ -15,6 +15,7 @@ final class AppContainer {
     private let storeChanges: any StoreChangeObserving = StoreChangeObserver()
     private let purchaseService: any PurchaseService
     private let imageProcessor: any ImageProcessor = CoreGraphicsImageProcessor()
+    private let libraryScanner: any PhotoLibraryScanner = PhotoKitLibraryScanner()
     private let cloudAccountStatus: any CloudAccountStatusProviding = UbiquityCloudAccountStatusProvider()
 
     init() throws {
@@ -87,6 +88,16 @@ final class AppContainer {
 
     func makePhotoViewerViewModel(photoID: UUID) -> PhotoViewerViewModel {
         return PhotoViewerViewModel(photoID: photoID, loadPhotoImage: loadPhotoImage)
+    }
+
+    func makeLibraryImportViewModel(propertyID: UUID) -> LibraryImportViewModel {
+        return LibraryImportViewModel(
+            propertyID: propertyID,
+            fetchProperty: fetchProperty,
+            scanLibrary: ScanLibraryPhotosUseCase(scanner: libraryScanner),
+            importLibrary: ImportLibraryPhotosUseCase(scanner: libraryScanner, addPhoto: addPhoto),
+            loadThumbnail: LoadLibraryThumbnailUseCase(scanner: libraryScanner)
+        )
     }
 
     func makeComparisonViewModel(propertyIDs: [UUID]) -> ComparisonViewModel {

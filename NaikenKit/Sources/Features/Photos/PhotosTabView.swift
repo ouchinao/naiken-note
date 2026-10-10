@@ -65,6 +65,11 @@ struct PhotosTabView: View {
             PhotosPicker(selection: $pickerItems, matching: .images) {
                 Label("選んで追加", systemImage: "photo.on.rectangle")
             }
+            Button {
+                router.present(.libraryImport(propertyID: property.id))
+            } label: {
+                Label("自動で探す", systemImage: "sparkle.magnifyingglass")
+            }
         }
         .buttonStyle(.bordered)
         .font(.subheadline)

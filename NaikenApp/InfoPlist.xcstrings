@@ -36,6 +36,24 @@
           }
         }
       }
+    },
+    "NSPhotoLibraryUsageDescription": {
+      "comment": "Privacy - Photo Library Usage Description",
+      "extractionState": "extracted_with_value",
+      "localizations": {
+        "en": {
+          "stringUnit": {
+            "state": "translated",
+            "value": "Naiken Note looks for photos taken around your viewing time to add them to the property."
+          }
+        },
+        "ja": {
+          "stringUnit": {
+            "state": "new",
+            "value": "内見の前後に撮った写真を探して物件に取り込むために、写真ライブラリを使います"
+          }
+        }
+      }
     }
   },
   "version": "1.0"

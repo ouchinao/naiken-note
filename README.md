@@ -15,7 +15,7 @@ NaikenApp/             Appターゲット(Composition Root、RootView、アセ�
 NaikenKit/             ローカルSwiftPMパッケージ
   Sources/Domain        Entity、UseCase、Repository / Service の protocol(Foundationのみ)
   Sources/Data          SwiftDataの @Model と Repository 実装
-  Sources/Platform      画像処理、StoreKit、ARセッション
+  Sources/Platform      画像処理、StoreKit、PhotoKit、ARセッション
   Sources/DesignSystem  色・余白・共通部品
   Sources/Features      画面ごとの View + ViewModel、Router、EntitlementStore
   Tests/                Swift Testing によるユニットテスト
