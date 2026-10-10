@@ -1,5 +1,6 @@
 import CoreGraphics
 import Foundation
+import ImageIO
 import Testing
 @testable import Platform
 
@@ -57,10 +58,15 @@ struct CoreGraphicsImageProcessorTests {
     }
 
     @Test("EXIFに撮影日時がなければ、TIFFの日時を端末のタイムゾーンの時刻として読む")
-    func fallsBackToTiffDateTime() throws {
-        let original = try JPEGFixture.make(width: 64, height: 64, tiffDateTime: "2026:10:01 14:30:00")
+    func fallsBackToTiffDateTime() {
+        let properties: [CFString: Any] = [
+            kCGImagePropertyExifDictionary: [CFString: Any](),
+            kCGImagePropertyTIFFDictionary: [kCGImagePropertyTIFFDateTime: "2026:10:01 14:30:00"],
+        ]
 
-        #expect(processor.captureDate(of: original) == localDate(year: 2026, month: 10, day: 1, hour: 14, minute: 30))
+        let date = CoreGraphicsImageProcessor.captureDate(from: properties)
+
+        #expect(date == localDate(year: 2026, month: 10, day: 1, hour: 14, minute: 30))
     }
 
     @Test("時差の書き方が読めなくても、撮影日時は端末のタイムゾーンの時刻として読む")

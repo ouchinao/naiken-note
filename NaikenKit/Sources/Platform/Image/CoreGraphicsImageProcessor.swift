@@ -25,6 +25,10 @@ public struct CoreGraphicsImageProcessor: ImageProcessor {
               let properties = CGImageSourceCopyPropertiesAtIndex(source, 0, nil) as? [CFString: Any] else {
             return nil
         }
+        return Self.captureDate(from: properties)
+    }
+
+    static func captureDate(from properties: [CFString: Any]) -> Date? {
         let exif = properties[kCGImagePropertyExifDictionary] as? [CFString: Any]
         let tiff = properties[kCGImagePropertyTIFFDictionary] as? [CFString: Any]
         guard let text = exif?[kCGImagePropertyExifDateTimeOriginal] as? String ?? tiff?[kCGImagePropertyTIFFDateTime] as? String else {
