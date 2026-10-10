@@ -20,6 +20,9 @@ struct RootView: View {
         }
         .sheet(item: $router.sheet) { sheet in
             container.makeView(for: sheet)
+                .sheet(item: $router.stackedSheet) { stackedSheet in
+                    container.makeView(for: stackedSheet)
+                }
         }
         .fullScreenCover(item: $router.fullScreen) { screen in
             container.makeView(for: screen)

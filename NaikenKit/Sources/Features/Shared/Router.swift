@@ -44,6 +44,8 @@ public final class Router {
 
     public var path: [Route] = []
     public var sheet: Sheet?
+    /// 開いているシートを置き換えないのは、物件の編集中に Paywall を開いても入力を捨てないため
+    public var stackedSheet: Sheet?
     public var fullScreen: FullScreen?
 
     public init() {}
@@ -57,7 +59,11 @@ public final class Router {
     }
 
     func present(_ sheet: Sheet) {
-        self.sheet = sheet
+        if self.sheet == nil {
+            self.sheet = sheet
+        } else {
+            stackedSheet = sheet
+        }
     }
 
     func presentFullScreen(_ screen: FullScreen) {
@@ -65,6 +71,10 @@ public final class Router {
     }
 
     func dismiss() {
+        if stackedSheet != nil {
+            stackedSheet = nil
+            return
+        }
         sheet = nil
         fullScreen = nil
     }
