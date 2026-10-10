@@ -28,10 +28,4 @@ public struct CheckItem: Identifiable, Hashable, Sendable {
     public let id: String
     public let title: String
     public let category: Category
-
-    init(id: String, title: String, category: Category) {
-        self.id = id
-        self.title = title
-        self.category = category
-    }
 }
