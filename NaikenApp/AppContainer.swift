@@ -120,7 +120,6 @@ final class AppContainer {
         )
     }
 
-    /// ARを使えない端末ではnilを返し、採寸画面にARのボタンを出さない
     func makeARMeasureLauncher() -> ARMeasureLauncher? {
         if !ARMeasureSession.isSupported {
             return nil

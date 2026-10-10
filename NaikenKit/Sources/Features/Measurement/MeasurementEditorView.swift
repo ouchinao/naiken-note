@@ -8,7 +8,6 @@ public struct MeasurementEditorView: View {
     @Environment(Router.self) private var router
     private let arMeasure: ARMeasureLauncher?
 
-    /// `arMeasure` がnilならAR採寸のボタンを出さない
     public init(viewModel: MeasurementEditorViewModel, arMeasure: ARMeasureLauncher?) {
         _viewModel = State(initialValue: viewModel)
         self.arMeasure = arMeasure

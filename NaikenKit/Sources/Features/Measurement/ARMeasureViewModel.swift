@@ -2,13 +2,11 @@ import Domain
 import Foundation
 import Observation
 
-/// AR採寸の画面の状態。受け取るのはミリ単位の距離だけで、ARKitの型は扱わない
 @MainActor
 @Observable
 public final class ARMeasureViewModel {
     // MARK: - State
 
-    /// 画面上でタップした位置。2点まで
     private(set) var markers: [CGPoint] = []
     private(set) var distanceMillimeters: Int?
     private(set) var isSurfaceMissing = false
@@ -39,7 +37,6 @@ public final class ARMeasureViewModel {
         measuring.pause()
     }
 
-    /// 画面をタップした位置に測定点を置く。3点目を置くと最初からやり直しになる
     func placePoint(at point: CGPoint, in size: CGSize) {
         if size.width <= 0 || size.height <= 0 {
             return

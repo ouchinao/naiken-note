@@ -2,7 +2,7 @@ import ARKit
 import SceneKit
 import SwiftUI
 
-/// ARSessionのカメラ映像と特徴点を表示する
+/// RealityKit の ARView ではなく ARSCNView を使うのは、Platform が持つ ARSession をそのまま渡せて、特徴点も標準の表示で出せるため
 struct ARCameraView: UIViewRepresentable {
     let session: ARSession
 

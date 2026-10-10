@@ -2,7 +2,6 @@ import ARKit
 import DesignSystem
 import SwiftUI
 
-/// ARで2点間の距離を測る画面。セッションの開始やraycastは Platform層の ARMeasureSession が担う
 public struct ARMeasureView: View {
     private static let markerSize: CGFloat = 14
     private static let lineWidth: CGFloat = 3

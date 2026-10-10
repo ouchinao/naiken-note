@@ -1,12 +1,10 @@
 import Domain
 import Foundation
 
-/// 面が見つかるかどうかと2点間の距離を決め打ちで返す
 @MainActor
 final class ARMeasuringStub: ARMeasuring {
     let isLiDARAvailable = false
     private(set) var placedPointCount = 0
-    /// 受け取った正規化済みの座標
     private(set) var receivedPoints: [CGPoint] = []
 
     var distanceMillimeters: Int? {
