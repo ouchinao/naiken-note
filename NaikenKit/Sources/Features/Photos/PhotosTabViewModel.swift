@@ -5,7 +5,8 @@ import Observation
 @MainActor
 @Observable
 public final class PhotosTabViewModel {
-    enum Notice {
+    enum Notice: Equatable {
+        case unreadable(count: Int)
         case failed(message: String)
     }
 
@@ -13,7 +14,7 @@ public final class PhotosTabViewModel {
 
     private(set) var thumbnails: [UUID: Data] = [:]
     private(set) var isImporting = false
-    var selectedTag: Photo.RoomTag?
+    private(set) var selectedTag: Photo.RoomTag?
     private(set) var notice: Notice?
 
     var isNoticePresented: Bool {
@@ -66,7 +67,16 @@ public final class PhotosTabViewModel {
         }
     }
 
-    func importPhotos(_ images: [Data], into propertyID: UUID) async {
+    func selectTag(_ tag: Photo.RoomTag?) {
+        selectedTag = tag
+    }
+
+    /// 写真を読み込み終えてから取り込み中にしないのは、iCloud にしかない写真のダウンロードを待つ間も操作中だと分かるようにするため
+    func beginImport() {
+        isImporting = true
+    }
+
+    func importPhotos(_ images: [Data], unreadableCount: Int, into propertyID: UUID) async {
         isImporting = true
         defer {
             isImporting = false
@@ -78,6 +88,9 @@ public final class PhotosTabViewModel {
                 notice = .failed(message: error.localizedDescription)
                 return
             }
+        }
+        if unreadableCount > 0 {
+            notice = .unreadable(count: unreadableCount)
         }
     }
 

@@ -24,3 +24,12 @@ public struct Measurement: Identifiable, Hashable, Sendable {
         self.createdAt = createdAt
     }
 }
+
+extension Measurement {
+    static func displayOrder(_ lhs: Measurement, _ rhs: Measurement) -> Bool {
+        if lhs.createdAt != rhs.createdAt {
+            return lhs.createdAt < rhs.createdAt
+        }
+        return lhs.id.uuidString < rhs.id.uuidString
+    }
+}

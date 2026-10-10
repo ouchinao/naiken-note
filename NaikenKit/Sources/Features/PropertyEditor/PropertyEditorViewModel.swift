@@ -13,6 +13,7 @@ public final class PropertyEditorViewModel {
 
     // MARK: - State
 
+    @ObservationIgnored private var original: Property?
     var name = ""
     var rentText = ""
     var layout = ""
@@ -46,7 +47,6 @@ public final class PropertyEditorViewModel {
 
     // MARK: - Init
 
-    @ObservationIgnored private var original: Property?
     private let propertyID: UUID?
     private let fetchProperty: FetchPropertyUseCase
     private let addProperty: AddPropertyUseCase

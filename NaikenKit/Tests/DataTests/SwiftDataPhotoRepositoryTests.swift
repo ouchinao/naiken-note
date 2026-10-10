@@ -12,18 +12,22 @@ struct SwiftDataPhotoRepositoryTests {
         container = try ModelContainerFactory.make(inMemory: true)
     }
 
-    @Test("保存した写真は物件の写真として並び順に読み出せる")
-    func photosAreSortedBySortOrder() async throws {
+    @Test("保存した写真を、部屋タグ・キャプション・撮影日時・並び順もそのまま読み出せる")
+    func roundTripsPhotoFields() async throws {
         let repository = SwiftDataPhotoRepository(modelContainer: container)
         try await SwiftDataPropertyRepository(modelContainer: container).save(property)
-        let second = Photo(id: UUID(), roomTag: .living, takenAt: Date(), sortOrder: 1)
-        let first = Photo(id: UUID(), roomTag: .kitchen, takenAt: Date(), sortOrder: 0)
-        try await repository.save(second, imageData: Data([1]), thumbnailData: Data([1]), propertyID: property.id)
-        try await repository.save(first, imageData: Data([2]), thumbnailData: Data([2]), propertyID: property.id)
+        let photo = Photo(
+            id: UUID(),
+            roomTag: .kitchen,
+            caption: "コンロは2口",
+            takenAt: Date(timeIntervalSince1970: 1_800_000_000),
+            sortOrder: 3
+        )
+        try await repository.save(photo, imageData: Data([1]), thumbnailData: Data([1]), propertyID: property.id)
 
         let photos = try await repository.photos(propertyID: property.id)
 
-        #expect(photos.map(\.id) == [first.id, second.id])
+        #expect(photos == [photo])
     }
 
     @Test("画像とサムネイルを別々に取り出せる")

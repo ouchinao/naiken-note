@@ -8,10 +8,16 @@ actor SwiftDataCheckResultRepository: CheckResultRepository {
         guard let property = try modelContext.propertyRecord(id: propertyID) else {
             throw RepositoryError.propertyNotFound
         }
-        let record = (property.checkResults ?? []).first { $0.itemKey == result.itemKey } ?? makeRecord(for: result, in: property)
+        let sameItem = (property.checkResults ?? [])
+            .filter { $0.itemKey == result.itemKey }
+            .sorted { $0.id.uuidString < $1.id.uuidString }
+        let record = sameItem.first { $0.id == result.id } ?? sameItem.first ?? makeRecord(for: result, in: property)
         record.apply(result)
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        // 余分な結果を残さないのは、2台の端末で同期前に同じ項目を評価してできた重複を、次に保存したときに解消するため
+        for duplicate in sameItem where duplicate !== record {
+            modelContext.delete(duplicate)
+        }
+        try modelContext.commit()
     }
 
     // MARK: - Private

@@ -21,15 +21,15 @@ enum NumberInput {
         if normalized.isEmpty {
             return Parsed(value: nil)
         }
-        guard let value = Double(normalized), value >= 0 else {
+        guard let value = Double(normalized), value.isFinite, value >= 0 else {
             return nil
         }
         return Parsed(value: value)
     }
 
     static func text(from value: Double) -> String {
-        if value == value.rounded() {
-            return String(Int(value))
+        if value == value.rounded(), let whole = Int(exactly: value) {
+            return String(whole)
         }
         return String(value)
     }
@@ -37,7 +37,8 @@ enum NumberInput {
     // MARK: - Private
 
     private static func normalize(_ text: String) -> String {
-        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines).replacingOccurrences(of: ",", with: "")
-        return trimmed.applyingTransform(.fullwidthToHalfwidth, reverse: false) ?? trimmed
+        let trimmed = text.trimmingCharacters(in: .whitespacesAndNewlines)
+        let halfwidth = trimmed.applyingTransform(.fullwidthToHalfwidth, reverse: false) ?? trimmed
+        return halfwidth.replacingOccurrences(of: ",", with: "")
     }
 }

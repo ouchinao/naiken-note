@@ -9,7 +9,7 @@ public struct SetRepresentativePhotoUseCase: Sendable {
     }
 
     public func execute(photoID: UUID, propertyID: UUID) async throws {
-        let photos = try await repository.photos(propertyID: propertyID)
+        let photos = try await repository.photos(propertyID: propertyID).sorted(by: Photo.displayOrder)
         guard let chosen = photos.first(where: { $0.id == photoID }) else {
             return
         }

@@ -5,10 +5,7 @@ import SwiftData
 @ModelActor
 actor SwiftDataPropertyRepository: PropertyRepository {
     func fetchAll() throws -> [Property] {
-        let descriptor = FetchDescriptor<PropertyRecord>(
-            sortBy: [SortDescriptor(\.visitedAt, order: .reverse)]
-        )
-        return try modelContext.fetch(descriptor).map(Property.init(record:))
+        return try modelContext.fetch(FetchDescriptor<PropertyRecord>()).map(Property.init(record:))
     }
 
     func fetch(id: UUID) throws -> Property? {
@@ -27,8 +24,7 @@ actor SwiftDataPropertyRepository: PropertyRepository {
         )
         modelContext.insert(record)
         record.apply(property)
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 
     func delete(id: UUID) throws {
@@ -36,7 +32,6 @@ actor SwiftDataPropertyRepository: PropertyRepository {
             return
         }
         modelContext.delete(record)
-        try modelContext.save()
-        StoreChangeObserver.postLocalChange()
+        try modelContext.commit()
     }
 }

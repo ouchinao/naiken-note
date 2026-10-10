@@ -18,7 +18,7 @@ public struct PhotoViewerView: View {
         NavigationStack {
             content
                 .frame(maxWidth: .infinity, maxHeight: .infinity)
-                .background(Color.black)
+                .background(.black)
                 .toolbar {
                     ToolbarItem(placement: .cancellationAction) {
                         Button("閉じる") { router.dismiss() }

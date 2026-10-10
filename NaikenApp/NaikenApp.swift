@@ -18,8 +18,7 @@ struct NaikenApp: App {
         WindowGroup {
             RootView(container: container)
                 .environment(container.router)
-                .environment(container.entitlementStore)
-                .tint(Color.brand)
+                .tint(.brand)
         }
     }
 }

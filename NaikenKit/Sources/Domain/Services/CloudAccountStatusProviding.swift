@@ -1,5 +1,5 @@
 import Foundation
 
 public protocol CloudAccountStatusProviding: Sendable {
-    func currentStatus() -> CloudSyncStatus
+    func currentStatus() async -> CloudSyncStatus
 }
